@@ -17,10 +17,17 @@ if (! IPList) return("");
 return(enhancer_getvarlist(IPList, ip_addr));
 }
 
-
 char *enhancer_map_ip(const char *RetStr, const char *name)
 {
 uint32_t ip_nbo;
+const char *ptr;
+
+if (IPList)
+{
+ptr=enhancer_varlist_find_value(IPList, name);
+printf("IPMAP: %s\n", ptr);
+if (strvalid(ptr)) return(enhancer_strcpy(RetStr, ptr));
+}
 
 ip_maps++;
 

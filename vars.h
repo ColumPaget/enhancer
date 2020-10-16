@@ -23,6 +23,7 @@ const char *enhancer_getvarlist(TVarList *list, const char *name);
 void enhancer_setvar(const char *name, const char *value);
 const char *enhancer_getvar(const char *name);
 void enhancer_func_setvar(const char *Arg, const char *FuncName, const char *Str1, const char *Str2);
+const char *enhancer_varlist_find_value(TVarList *list, const char *value);
 
 
 #endif

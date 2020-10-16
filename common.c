@@ -24,6 +24,7 @@ const char **enhancer_argv;
 void enhancer_fail_die(const char *FuncName)
 {
   fprintf(stderr, "FATAL: %s failed!\n", FuncName);
+  syslog(LOG_CRIT, "FATAL: %s failed!\n", FuncName);
   exit(1);
 }
 

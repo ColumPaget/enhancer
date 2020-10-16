@@ -82,6 +82,7 @@ char *Auth=NULL;
 const char *ptr;
 int fd;
 
+if (! DestHost) return(-1);
 Auth=enhancer_strcpy(Auth, "");
 if (strchr(ProxyURL, '@'))
 {
@@ -95,8 +96,6 @@ if (fd > -1)
 	ptr=enhancer_iplist_get(DestHost);
 	if (! strvalid(ptr)) ptr=DestHost;
 	
-	fprintf(stderr, "SOCKS: %s %s\n", DestHost, ptr);
-
 	if (
 				(! socks_request(fd, Auth, ptr, DestPort)) ||
 				(! socks_reply(fd))

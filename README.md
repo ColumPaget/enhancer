@@ -143,10 +143,11 @@ You can specify 'match modifiers' for a function. The config line will only be u
 ```
 path          perform match against first arg of the function. This is usually a file path, but for 'connect' and 'bind' it can be a URL
 basename      peform a match against the basename (leading directory removed) of the first arg of the function
-family        for 'connect', 'bind' and 'accept' this is the url type. It can be 'tcp6', 'tcp', 'udp', or 'unix'
-peer          for 'connect' and 'accept' this is the remote host ip
-user          match against username
-group         match against groupname
+family        for 'connect', 'bind' and 'accept' this is the url type. It can be 'ip4', 'ip6', 'net', or 'unix'. 'net' matches both 'ip4' and 'ip6'
+peer          for 'connect' and 'accept' this is the remote host ip, extracted from 'path' which will be url
+port          for 'connect' and 'bind' this will be the port to bind or connect to
+user          match against username current process is running as
+group         match against primary groupname current process is running as
 arg           match if any arg in the programs arguments matches
 ```
 
@@ -281,8 +282,17 @@ Will map the hostname lookup to a false ipaddress in the form '0.0.0.x' When the
 
 ```
 gethostip ipmap
-connect family=tcp redirect socks:127.0.0.1:9090
+connect path=tcp:* redirect socks:127.0.0.1:9090
 ```
+
+It's a good idea to at least specify `path=tcp:` to prevent trying to redirect, say, a connection for syslog logging to socks. You can be more specific if you only want to map certain hosts. e.g. if local hosts are in the domain '.local' then we might use:
+
+```
+gethostip path!=*.local ipmap
+connect path=tcp:0.* redirect socks:127.0.0.1:9090
+```
+
+The use of `path=tcp:0.*` in this case ensures that only IP addresses that have been mapped with ipmap are redirected to socks. The use of `path!=*.local` in the 'gethostip' rule means that local addresses are not ipmapped.
 
 
 UNSHARE

@@ -82,6 +82,22 @@ for (i=0; i < list->max; i++)
 return("");
 }
 
+const char *enhancer_varlist_find_value(TVarList *list, const char *value)
+{
+TVar *Var;
+int i;
+
+for (i=0; i < list->max; i++)
+{
+	Var=&(list->vars[i]);
+	if (Var && (strcmp(Var->value,value)==0) ) return(Var->name);
+}
+
+return("");
+}
+
+
+
 const char *enhancer_getvar(const char *name)
 {
 if (! enhancer_varlist) return("");

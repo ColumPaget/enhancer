@@ -9,17 +9,8 @@ extern char *enhancer_prog_name;
 
 
 
-#define MATCH_ALL  0
-#define MATCH_PATH 1
-#define MATCH_BASENAME 2
-#define MATCH_FAMILY   3
-#define MATCH_PORT  4
-#define MATCH_USER  5
-#define MATCH_GROUP 6
-#define MATCH_FD 7
-#define MATCH_ARG 8
-#define MATCH_PEER 9
-#define MATCH_CHROOTED 10
+typedef enum {MATCH_ALL, MATCH_PATH, MATCH_BASENAME, MATCH_FAMILY, MATCH_PROTO, MATCH_PEER, MATCH_PORT, MATCH_USER, MATCH_GROUP, MATCH_FD, MATCH_ARG, MATCH_CHROOTED} EMatchTypes;
+
 
 #define OP_EQ  0
 #define OP_NOT 1
@@ -30,9 +21,9 @@ extern char *enhancer_prog_name;
 char *EnhancerFuncNames[]={"all","main", "onexit", "arg", "open", "close", "read", "write", "uname", "socket", "connect", "bind", "listen", "accept", "gethostip", "sprintf", "fork", "exec", "system", "sysexec", "unlink", "setuid", "setgid", "chown", "chmod", "chdir", "chroot", "time","settime","mprotect", "fsync", "fdatasync", "select", "XMapWindow","XRaiseWindow", "XLowerWindow", "XSendEvent", "XLoadFont", "XChangeProperty", NULL};
 
 
-char *EnhancerTokNames[]={"deny","allow","die","abort","setvar","setbasename","log","syslog","syslogcrit","echo", "debug", "send", "exec", "die-on-fail", "collect", "sleep", "usleep", "deny-links","deny-symlinks","redirect","fallback","chrooted","if-chrooted","path","basename","peer","user","group","family","fd", "arg", "keepalive", "localnet", "reuseport", "tcp-qack", "tcp-nodelay", "ttl", "freebind", "cmod", "lock", "fdcache","create", "shred", "searchpath", "xstayabove", "xstaybelow", "xiconized", "xunmanaged", "xfullscreen", "xtransparent", "xnormal","pidfile","lockfile", "xtermtitle","backup", "nosync", "fsync", "fdatasync", "writejail", "unshare", "setenv", "getip", "cd", "chroot", "copyclone", "linkclone", "ipmap", "fadv_seq", "fadv_rand", "fadv_nocache", "qlen", "sanitise", "die-on-taint", "deny-on-taint", NULL};
+char *EnhancerTokNames[]={"deny","allow","die","abort","setvar","setbasename","log","syslog","syslogcrit","echo", "debug", "send", "exec", "die-on-fail", "collect", "sleep", "usleep", "deny-links","deny-symlinks","redirect","fallback","chrooted","if-chrooted","path","basename","peer","port","user","group","family","fd", "arg", "keepalive", "localnet", "reuseport", "tcp-qack", "tcp-nodelay", "ttl", "freebind", "cmod", "lock", "fdcache","create", "shred", "searchpath", "xstayabove", "xstaybelow", "xiconized", "xunmanaged", "xfullscreen", "xtransparent", "xnormal","pidfile","lockfile", "xtermtitle","backup", "nosync", "fsync", "fdatasync", "writejail", "unshare", "setenv", "getip", "cd", "chroot", "copyclone", "linkclone", "ipmap", "fadv_seq", "fadv_rand", "fadv_nocache", "qlen", "sanitise", "die-on-taint", "deny-on-taint", NULL};
 
-typedef enum {TOK_DENY, TOK_ALLOW, TOK_DIE, TOK_ABORT, TOK_SETVAR, TOK_SETBASENAME, TOK_LOG, TOK_SYSLOG, TOK_SYSLOGCRIT, TOK_ECHO, TOK_DEBUG, TOK_SEND, TOK_EXEC, TOK_FAILDIE, TOK_COLLECT, TOK_SLEEP, TOK_USLEEP, TOK_DENYLINKS, TOK_DENYSYMLINKS, TOK_REDIRECT, TOK_FALLBACK, TOK_CHROOTED, TOK_CHROOTED2, TOK_PATH, TOK_BASENAME, TOK_PEER, TOK_USER, TOK_GROUP, TOK_FAMILY, TOK_FD, TOK_ARG, TOK_KEEPALIVE, TOK_LOCALNET, TOK_REUSEPORT, TOK_TCP_QACK, TOK_TCP_NODELAY, TOK_TTL, TOK_FREEBIND, TOK_CMOD, TOK_LOCK, TOK_FDCACHE, TOK_CREATE, TOK_SHRED, TOK_SEARCHPATH, TOK_X11_STAYABOVE, TOK_X11_STAYBELOW, TOK_X11_ICONIZED, TOK_X11_UNMANAGED, TOK_X11_FULLSCREEN, TOK_X11_TRANSPARENT, TOK_X11_NORMAL, TOK_PIDFILE, TOK_LOCKFILE, TOK_XTERM_TITLE, TOK_BACKUP, TOK_NOSYNC, TOK_FSYNC, TOK_FDATASYNC, TOK_WRITEJAIL, TOK_UNSHARE, TOK_SETENV, TOK_GETIP, TOK_CHDIR, TOK_CHROOT, TOK_COPY_CLONE, TOK_LINK_CLONE, TOK_IPMAP, TOK_FADV_SEQU, TOK_FADV_RAND, TOK_FADV_NOCACHE, TOK_QLEN, TOK_SANITISE, TOK_DIE_ON_TAINT, TOK_DENY_ON_TAINT} TActions;
+typedef enum {TOK_DENY, TOK_ALLOW, TOK_DIE, TOK_ABORT, TOK_SETVAR, TOK_SETBASENAME, TOK_LOG, TOK_SYSLOG, TOK_SYSLOGCRIT, TOK_ECHO, TOK_DEBUG, TOK_SEND, TOK_EXEC, TOK_FAILDIE, TOK_COLLECT, TOK_SLEEP, TOK_USLEEP, TOK_DENYLINKS, TOK_DENYSYMLINKS, TOK_REDIRECT, TOK_FALLBACK, TOK_CHROOTED, TOK_CHROOTED2, TOK_PATH, TOK_BASENAME, TOK_PEER, TOK_PORT, TOK_USER, TOK_GROUP, TOK_FAMILY, TOK_FD, TOK_ARG, TOK_KEEPALIVE, TOK_LOCALNET, TOK_REUSEPORT, TOK_TCP_QACK, TOK_TCP_NODELAY, TOK_TTL, TOK_FREEBIND, TOK_CMOD, TOK_LOCK, TOK_FDCACHE, TOK_CREATE, TOK_SHRED, TOK_SEARCHPATH, TOK_X11_STAYABOVE, TOK_X11_STAYBELOW, TOK_X11_ICONIZED, TOK_X11_UNMANAGED, TOK_X11_FULLSCREEN, TOK_X11_TRANSPARENT, TOK_X11_NORMAL, TOK_PIDFILE, TOK_LOCKFILE, TOK_XTERM_TITLE, TOK_BACKUP, TOK_NOSYNC, TOK_FSYNC, TOK_FDATASYNC, TOK_WRITEJAIL, TOK_UNSHARE, TOK_SETENV, TOK_GETIP, TOK_CHDIR, TOK_CHROOT, TOK_COPY_CLONE, TOK_LINK_CLONE, TOK_IPMAP, TOK_FADV_SEQU, TOK_FADV_RAND, TOK_FADV_NOCACHE, TOK_QLEN, TOK_SANITISE, TOK_DIE_ON_TAINT, TOK_DENY_ON_TAINT} TActions;
 
 char *EnhancerFamilyNames[]={"unix","raw","netlink","net","ip4","ip6",NULL};
 typedef enum {FAMILY_UNIX, FAMILY_RAW, FAMILY_NETLINK, FAMILY_NET, FAMILY_IP4, FAMILY_IP6} E_NETFAM;
@@ -334,9 +325,24 @@ case FUNC_XLoadFont:
 	}
 break;
 
+case FUNC_GETHOSTIP:
+	switch (action)
+	{
+		case ACT_TTL:
+		case ACT_CMOD:
+		case ACT_WRITEJAIL: 
+		case ACT_FALLBACK:
+		case ACT_SEARCHPATH:
+			return(FALSE);
+		break;
+	
+		default:
+			return(TRUE);
+		break;
+	}
+break;
 
 case FUNC_UNAME:
-case FUNC_GETHOSTIP:
 case FUNC_TIME:
 case FUNC_SETTIME:
 case FUNC_SETUID:
@@ -474,20 +480,43 @@ enhancer_add_action(Combined, Act->Type, "", Act->IntArg, Act->StrArg);
 static int ConfigStrMatch(TConfigItem *Config, const char *MatchStr)
 {
 int result;
-char *Peer=NULL;
+char *Item=NULL;
 const char *ptr, *p_MatchStr;
 
-	if (Config->Type==MATCH_PEER)
+	switch(Config->Type)
 	{
-		ptr=enhancer_strtok(MatchStr, ":", &Peer);
-		ptr=enhancer_strtok(ptr, ":", &Peer);
-		p_MatchStr=Peer;
+		case MATCH_BASENAME:
+		p_MatchStr=basename(MatchStr);
+		break;
+
+
+		case MATCH_PROTO:
+		ptr=enhancer_strtok(MatchStr, ":", &Item);
+		ptr=enhancer_strtok(ptr, ":", &Item);
+		p_MatchStr=Item;
+		break;
+
+
+		case MATCH_PEER:
+		ptr=enhancer_strtok(MatchStr, ":", &Item);
+		ptr=enhancer_strtok(ptr, ":", &Item);
+		p_MatchStr=Item;
+		break;
+
+		case MATCH_PORT:
+		ptr=enhancer_strtok(MatchStr, ":", &Item);
+		ptr=enhancer_strtok(ptr, ":", &Item);
+		ptr=enhancer_strtok(ptr, ":", &Item);
+		p_MatchStr=Item;
+		break;
+
+		default:
+		p_MatchStr=MatchStr;
+		break;
 	}
-	else if (Config->Type==MATCH_BASENAME) p_MatchStr=basename(MatchStr);
-	else p_MatchStr=MatchStr;
 
 	result=StrListMatch(p_MatchStr, Config->StrArg);
-	destroy(Peer);
+	destroy(Item);
 
 	if (Config->Op==OP_NOT) result = !result;
 
@@ -514,6 +543,7 @@ for (i=0; i < Config->NoOfMatches; i++)
 		case MATCH_ARG:
 		case MATCH_PATH:
 		case MATCH_PEER:
+		case MATCH_PORT:
 		case MATCH_BASENAME:
 		if (ConfigStrMatch(Match, MatchStr)) return(TRUE);
 		break;
@@ -541,7 +571,6 @@ for (i=0; i < Config->NoOfMatches; i++)
 			if (Match->IntArg == getgid()) return(TRUE);
 		break;
 
-		case MATCH_PORT:
 		case MATCH_FD:
 			if (Match->IntArg == MatchInt) return(TRUE);
 		break;
