@@ -436,7 +436,7 @@ setuid die-on-fail
 Sometimes it's useful to pause a program. For instance, it maybe useful to attach gdb to a child process of a server (e.g. a cgi program being run from a webserver) before the process fully runs. This can also be useful when debugging dynamically loaded libraries like enhancer.so, because gdb does not always seem to know what libraries were linked in when a coredump was produced, but if you can hook gdb to the running process, then it does. Pausing a program can be achieved using the 'sleep' or 'usleep' functions. 'sleep' takes an argument of seconds, and 'usleep' takes an argument of nanoseconds
 
 
-
+```
 program crashing.cgi
 {
 main sleep 30
