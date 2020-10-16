@@ -385,6 +385,7 @@ return(enhancer_real_close(fd));
 }
 
 
+/* THIS FUNCTION NOT IMPLEMENTED YET
 int write(int fd, const void *Data, size_t len)
 {
 char *redirect=NULL;
@@ -398,7 +399,7 @@ destroy(redirect);
 
 return(result);
 }
-
+*/
 
 
 int unlink(const char *path)
