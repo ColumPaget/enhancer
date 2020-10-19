@@ -1,11 +1,11 @@
-OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
-FLAGS=-g -g -O2
+OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o x11_hooks.o
+FLAGS=-g -fPIC -g -O2 -I/usr/X11R7/include
 CC=gcc
 
 all: enhancer.so
 
 enhancer.so: $(OBJ)
-	$(CC) $(FLAGS) -fPIC -shared -o enhancer.so $(OBJ) -ldl
+	$(CC) $(FLAGS) -shared -o enhancer.so $(OBJ) -ldl
 
 common.o: common.c common.h
 	$(CC) $(FLAGS) -c common.c

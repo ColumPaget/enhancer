@@ -22,12 +22,12 @@
 #define FLAG_DIE_ON_TAINT 8192			 //only in exec and system
 #define FLAG_LOCK 16384
 #define FLAG_NET_DONTROUTE 16384
-#define FLAG_X_STAYABOVE 16384
+#define FLAG_X_STAY_ABOVE 16384
 #define FLAG_DENY_ON_TAINT 16384		//only in exec and system
 #define FLAG_CREATE 32768           //only in open
 #define FLAG_SHRED 32768            //only in unlink
 #define FLAG_NET_REUSEPORT 32768    //only in bind
-#define FLAG_X_STAYBELOW 32768      //only in Xwindows
+#define FLAG_X_STAY_BELOW 32768     //only in Xwindows
 #define FLAG_X_ICONIZED 65536
 #define FLAG_TCP_NODELAY 65536
 #define FLAG_BACKUP      65536

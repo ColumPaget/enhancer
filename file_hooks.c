@@ -286,6 +286,10 @@ if (oflags & O_CREAT)
 	va_end(args);
 }
 
+#ifdef O_LARGEFILE
+oflags |= O_LARGEFILE;
+#endif
+
 Flags=open_common("open", &fd, ipath, &oflags, &mode, &path);
 if ((Flags & FLAG_CACHE_FD) && (fd > -1)) 
 {
@@ -354,6 +358,10 @@ destroy(path);
 return(f);
 }
 
+FILE *fopen64(const char *ipath, const char *args)
+{
+return(fopen(ipath, args));
+}
 
 
 int close(int fd)

@@ -23,7 +23,7 @@ char *EnhancerFuncNames[]={"all","main", "onexit", "arg", "open", "close", "read
 
 char *EnhancerTokNames[]={"deny","allow","die","abort","setvar","setbasename","log","syslog","syslogcrit","echo", "debug", "send", "exec", "die-on-fail", "collect", "sleep", "usleep", "deny-links","deny-symlinks","redirect","fallback","chrooted","if-chrooted","path","basename","peer","port","user","group","family","fd", "arg", "keepalive", "localnet", "reuseport", "tcp-qack", "tcp-nodelay", "ttl", "freebind", "cmod", "lock", "fdcache","create", "shred", "searchpath", "xstayabove", "xstaybelow", "xiconized", "xunmanaged", "xfullscreen", "xtransparent", "xnormal","pidfile","lockfile", "xtermtitle","backup", "nosync", "fsync", "fdatasync", "writejail", "unshare", "setenv", "getip", "cd", "chroot", "copyclone", "linkclone", "ipmap", "fadv_seq", "fadv_rand", "fadv_nocache", "qlen", "sanitise", "die-on-taint", "deny-on-taint", NULL};
 
-typedef enum {TOK_DENY, TOK_ALLOW, TOK_DIE, TOK_ABORT, TOK_SETVAR, TOK_SETBASENAME, TOK_LOG, TOK_SYSLOG, TOK_SYSLOGCRIT, TOK_ECHO, TOK_DEBUG, TOK_SEND, TOK_EXEC, TOK_FAILDIE, TOK_COLLECT, TOK_SLEEP, TOK_USLEEP, TOK_DENYLINKS, TOK_DENYSYMLINKS, TOK_REDIRECT, TOK_FALLBACK, TOK_CHROOTED, TOK_CHROOTED2, TOK_PATH, TOK_BASENAME, TOK_PEER, TOK_PORT, TOK_USER, TOK_GROUP, TOK_FAMILY, TOK_FD, TOK_ARG, TOK_KEEPALIVE, TOK_LOCALNET, TOK_REUSEPORT, TOK_TCP_QACK, TOK_TCP_NODELAY, TOK_TTL, TOK_FREEBIND, TOK_CMOD, TOK_LOCK, TOK_FDCACHE, TOK_CREATE, TOK_SHRED, TOK_SEARCHPATH, TOK_X11_STAYABOVE, TOK_X11_STAYBELOW, TOK_X11_ICONIZED, TOK_X11_UNMANAGED, TOK_X11_FULLSCREEN, TOK_X11_TRANSPARENT, TOK_X11_NORMAL, TOK_PIDFILE, TOK_LOCKFILE, TOK_XTERM_TITLE, TOK_BACKUP, TOK_NOSYNC, TOK_FSYNC, TOK_FDATASYNC, TOK_WRITEJAIL, TOK_UNSHARE, TOK_SETENV, TOK_GETIP, TOK_CHDIR, TOK_CHROOT, TOK_COPY_CLONE, TOK_LINK_CLONE, TOK_IPMAP, TOK_FADV_SEQU, TOK_FADV_RAND, TOK_FADV_NOCACHE, TOK_QLEN, TOK_SANITISE, TOK_DIE_ON_TAINT, TOK_DENY_ON_TAINT} TActions;
+typedef enum {TOK_DENY, TOK_ALLOW, TOK_DIE, TOK_ABORT, TOK_SETVAR, TOK_SETBASENAME, TOK_LOG, TOK_SYSLOG, TOK_SYSLOGCRIT, TOK_ECHO, TOK_DEBUG, TOK_SEND, TOK_EXEC, TOK_FAILDIE, TOK_COLLECT, TOK_SLEEP, TOK_USLEEP, TOK_DENYLINKS, TOK_DENYSYMLINKS, TOK_REDIRECT, TOK_FALLBACK, TOK_CHROOTED, TOK_CHROOTED2, TOK_PATH, TOK_BASENAME, TOK_PEER, TOK_PORT, TOK_USER, TOK_GROUP, TOK_FAMILY, TOK_FD, TOK_ARG, TOK_KEEPALIVE, TOK_LOCALNET, TOK_REUSEPORT, TOK_TCP_QACK, TOK_TCP_NODELAY, TOK_TTL, TOK_FREEBIND, TOK_CMOD, TOK_LOCK, TOK_FDCACHE, TOK_CREATE, TOK_SHRED, TOK_SEARCHPATH, TOK_X11_STAY_ABOVE, TOK_X11_STAY_BELOW, TOK_X11_ICONIZED, TOK_X11_UNMANAGED, TOK_X11_FULLSCREEN, TOK_X11_TRANSPARENT, TOK_X11_NORMAL, TOK_PIDFILE, TOK_LOCKFILE, TOK_XTERM_TITLE, TOK_BACKUP, TOK_NOSYNC, TOK_FSYNC, TOK_FDATASYNC, TOK_WRITEJAIL, TOK_UNSHARE, TOK_SETENV, TOK_GETIP, TOK_CHDIR, TOK_CHROOT, TOK_COPY_CLONE, TOK_LINK_CLONE, TOK_IPMAP, TOK_FADV_SEQU, TOK_FADV_RAND, TOK_FADV_NOCACHE, TOK_QLEN, TOK_SANITISE, TOK_DIE_ON_TAINT, TOK_DENY_ON_TAINT} TActions;
 
 char *EnhancerFamilyNames[]={"unix","raw","netlink","net","ip4","ip6",NULL};
 typedef enum {FAMILY_UNIX, FAMILY_RAW, FAMILY_NETLINK, FAMILY_NET, FAMILY_IP4, FAMILY_IP6} E_NETFAM;
@@ -68,8 +68,8 @@ static int enhancer_flag_matches_func(int func, int ConfID)
 switch (ConfID)
 {
 case TOK_X11_NORMAL:
-case TOK_X11_STAYABOVE:
-case TOK_X11_STAYBELOW:
+case TOK_X11_STAY_ABOVE:
+case TOK_X11_STAY_BELOW:
 case TOK_X11_ICONIZED:
 case TOK_X11_FULLSCREEN:
 case TOK_X11_UNMANAGED:
@@ -933,12 +933,12 @@ if (strcmp(Name,"\n")==0) break;
 			enhancer_set_config(Conf, val, Name, 0, FLAG_FADVISE_NOCACHE);
 		break;
 
-		case TOK_X11_STAYABOVE:
-			enhancer_set_config(Conf, val, Name, 0, FLAG_X_STAYABOVE);
+		case TOK_X11_STAY_ABOVE:
+			enhancer_set_config(Conf, val, Name, 0, FLAG_X_STAY_ABOVE);
 		break;
 
-		case TOK_X11_STAYBELOW:
-			enhancer_set_config(Conf, val, Name, 0, FLAG_X_STAYBELOW);
+		case TOK_X11_STAY_BELOW:
+			enhancer_set_config(Conf, val, Name, 0, FLAG_X_STAY_BELOW);
 		break;
 
 		case TOK_X11_ICONIZED:
