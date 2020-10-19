@@ -1249,7 +1249,7 @@ if (! strvalid(SetupData))
 	if (! strvalid(SetupData)) 
 	{
 		Tempstr=enhancer_strcpy(Tempstr, getenv("HOME"));
-		SetupData=enhancer_read_config(SetupData, Tempstr, ".enhancer.conf");
+		SetupData=enhancer_read_config(SetupData, Tempstr, "/.enhancer.conf");
 	}
 }
 
