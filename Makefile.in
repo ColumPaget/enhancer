@@ -1,6 +1,7 @@
 OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o @X11_HOOKS_OBJ@
 FLAGS=-g -fPIC @CFLAGS@
 CC=gcc
+VERSION=1.1
 
 all: enhancer.so
 
