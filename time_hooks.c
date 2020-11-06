@@ -7,7 +7,7 @@
 
 time_t (*enhancer_real_time)(time_t *RetVal)=NULL;
 int (*enhancer_real_gettimeofday)(struct timeval *tv, struct timezone *tz)=NULL;
-int (*enhancer_real_settimeofday)(struct timeval *tv, struct timezone *tz)=NULL;
+int (*enhancer_real_settimeofday)(const struct timeval *tv, const struct timezone *tz)=NULL;
 int (*enhancer_real_setitimer)(__itimer_which_t Type, const struct itimerval *new, struct itimerval *curr)=NULL;
 
 
@@ -21,7 +21,7 @@ if (TimeMod)
 	ptr=TimeMod;
 	while (strvalid(ptr))
 	{
-		mod=strtol(ptr, &ptr, 10);
+		mod=strtol(ptr, (char **) &ptr, 10);
 		if (mod==0) break; //something went wrong
 		switch (*ptr)
 		{
@@ -76,28 +76,43 @@ int result;
 
 if (! enhancer_real_gettimeofday) enhancer_get_real_functions();
 
-//Flags=enhancer_checkconfig_with_redirect(FUNC_TIME, "time", "", "", 0, 0, &TimeMod);
-//if (Flags & FLAG_DENY) return(-1);
+Flags=enhancer_checkconfig_with_redirect(FUNC_TIME, "time", "", "", 0, 0, &TimeMod);
+if (Flags & FLAG_DENY) 
+{
+	destroy(TimeMod);
+	return(-1);
+}
 
 result=enhancer_real_gettimeofday(tv, tz);
 tv->tv_sec=ChangeTime(tv->tv_sec, TimeMod);
 
+destroy(TimeMod);
 return(result);
 }
 
-int settimeofday(const struct timeval *tv, const struct timezone *tz)
+
+int settimeofday(const struct timeval *itv, const struct timezone *tz)
 {
 int Flags;
 char *TimeMod=NULL;
 int result;
+struct timeval tv;
 
+tv.tv_sec=itv->tv_sec;
+tv.tv_usec=itv->tv_usec;
 if (! enhancer_real_settimeofday) enhancer_get_real_functions();
 
 Flags=enhancer_checkconfig_with_redirect(FUNC_TIME, "time", "", "", 0, 0, &TimeMod);
-if (Flags & FLAG_DENY) return(-1);
+if (Flags & FLAG_DENY)
+{
+	destroy(TimeMod);
+	return(-1);
+}
 
-result=enhancer_real_settimeofday(tv, tz);
+tv.tv_sec=ChangeTime(tv.tv_sec, TimeMod);
+result=enhancer_real_settimeofday(&tv, tz);
 
+destroy(TimeMod);
 return(result);
 }
 

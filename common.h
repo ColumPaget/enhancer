@@ -64,7 +64,7 @@ TEnhancerConfig *Items;
 extern unsigned int enhancer_flags;
 extern int enhancer_log_fd;
 extern int enhancer_argc;
-extern const char **enhancer_argv;
+extern char **enhancer_argv;
 
 void __attribute__ ((constructor)) enhancer_init(void);
 

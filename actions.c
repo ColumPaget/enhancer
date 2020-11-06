@@ -2,17 +2,19 @@
 #include "common.h"
 #include "config.h"
 #include "vars.h"
+#include "iplist.h"
 #define _GNU_SOURCE
 #include <sched.h>
 #include <syslog.h>
 #include <wait.h>
+#include <sys/file.h>
 #include "net.h"
 
 char *EnhancerChrootDir=NULL;
 
 
 
-const char *EnhancerConvertPathToChroot(const char *Path)
+const char *enhancer_ConvertPathToChroot(const char *Path)
 {
 if (! EnhancerChrootDir) return(Path);
 if (strcmp(Path,EnhancerChrootDir)==0) return(Path+strlen(EnhancerChrootDir));

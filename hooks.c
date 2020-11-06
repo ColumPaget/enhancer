@@ -6,9 +6,11 @@
 #include <poll.h>
 #include "hooks.h"
 #include "socket_hooks.h"
+#include "dl_hooks.h"
 #include "exec_hooks.h"
 #include "file_hooks.h"
 #include "time_hooks.h"
+#include "vars.h"
 
 #ifdef HAVE_X11
 #include "x11_hooks.h"
@@ -274,6 +276,7 @@ char *Args=NULL;
 
 void enhancer_get_real_functions()
 {
+enhancer_dl_hooks();
 enhancer_exec_hooks();
 enhancer_time_hooks();
 enhancer_file_hooks();

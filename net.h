@@ -2,6 +2,7 @@
 #define ENHANCER_NET_H
 
 #include "common.h"
+#include <arpa/inet.h>
 
 int net_get_salen(struct sockaddr *sa);
 struct sockaddr *net_sockaddr_from_url(const char *URL);

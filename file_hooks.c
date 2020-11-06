@@ -203,7 +203,7 @@ full_path=enhancer_strncat(full_path, path, 0);
 else full_path=enhancer_strcpy(full_path, path);
 
 if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
-p_path=EnhancerConvertPathToChroot(full_path);
+p_path=enhancer_ConvertPathToChroot(full_path);
 
 *redirect=enhancer_strcpy(*redirect, full_path);
 

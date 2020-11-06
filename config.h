@@ -57,7 +57,7 @@ int strcpy_max;
 
 struct enhancer_settings_struct enhancer_settings;
 
-typedef enum {FUNC_ALL, FUNC_MAIN, FUNC_ONEXIT, FUNC_PROGRAM_ARG, FUNC_OPEN, FUNC_CLOSE, FUNC_READ, FUNC_WRITE, FUNC_UNAME, FUNC_SOCKET, FUNC_CONNECT, FUNC_BIND, FUNC_LISTEN, FUNC_ACCEPT, FUNC_GETHOSTIP, FUNC_SPRINTF, FUNC_FORK, FUNC_EXEC, FUNC_SYSTEM, FUNC_SYSEXEC, FUNC_UNLINK, FUNC_SETUID, FUNC_SETGID, FUNC_CHOWN, FUNC_CHMOD, FUNC_CHDIR, FUNC_CHROOT, FUNC_TIME, FUNC_SETTIME, FUNC_MPROTECT, FUNC_FSYNC, FUNC_FDATASYNC, FUNC_SELECT, FUNC_XMapWindow, FUNC_XRaiseWindow, FUNC_XLowerWindow, FUNC_XSendEvent, FUNC_XLoadFont, FUNC_XChangeProperty} E_Funcs;
+typedef enum {FUNC_ALL, FUNC_MAIN, FUNC_ONEXIT, FUNC_PROGRAM_ARG, FUNC_OPEN, FUNC_CLOSE, FUNC_READ, FUNC_WRITE, FUNC_UNAME, FUNC_DLOPEN, FUNC_DLCLOSE, FUNC_SOCKET, FUNC_CONNECT, FUNC_BIND, FUNC_LISTEN, FUNC_ACCEPT, FUNC_GETHOSTIP, FUNC_SPRINTF, FUNC_FORK, FUNC_EXEC, FUNC_SYSTEM, FUNC_SYSEXEC, FUNC_UNLINK, FUNC_SETUID, FUNC_SETGID, FUNC_CHOWN, FUNC_CHMOD, FUNC_CHDIR, FUNC_CHROOT, FUNC_TIME, FUNC_SETTIME, FUNC_MPROTECT, FUNC_FSYNC, FUNC_FDATASYNC, FUNC_SELECT, FUNC_XMapWindow, FUNC_XRaiseWindow, FUNC_XLowerWindow, FUNC_XSendEvent, FUNC_XLoadFont, FUNC_XChangeProperty} E_Funcs;
 
 void enhancer_load_config();
 int enhancer_checkconfig_default(int FuncID, const char *FuncName, const char *Str1, const char *Str2, int Int1, int Int2);
@@ -68,5 +68,6 @@ int enhancer_checkconfig_program_arg(const char *Arg, char **Redirect);
 TEnhancerConfig *enhancer_checkconfig_open_function(int FuncID, const char *FuncName, const char *Path, int Int1, int Int2, char **Redirect);
 int enhancer_checkconfig_socket_function(int FuncID, const char *FuncName, TSockInfo *SockInfo);
 int enhancer_checkconfig_exec_function(int FuncID, const char *FuncName, const char *Path, char **Redirect, char **TrustedPath);
+void enhancer_config_destroy(TEnhancerConfig *Config);
 
 #endif

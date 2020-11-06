@@ -117,6 +117,8 @@ settime
 select     applies to both select and poll
 fsync
 fdatasync
+dlopen
+dlclose
 ```
 
 X11 Hooked Functions
@@ -165,6 +167,7 @@ The following actions can be booked against a function, to be carried out when i
 
 ```
 deny            do not perform the function, return and error code indicating failure
+pretend         do not perform the function, return and error code indicating success
 allow           perform the function as expected
 die             cause the program to exit
 die-on-fail     cause the program to exit if function call fails
@@ -228,6 +231,8 @@ linkclone       clone (hardlink) file into current directory
 ipmap           only for 'gethostbyname/getaddrinfo'. Map name to 'fake' IP address. See 'IP MAPPING' below.
 writejail       prefix all writes with the filepath given as a string argument (poor man's chroot)
 ```
+
+The 'pretend' action is only supported for the functions: bind, dlclose, unlink, unlinkat, fsync, fdatasync, fchown, chown, fchmod, chmod, chroot, fchroot.
 
 
 ACTION ARGUMENTS
@@ -630,4 +635,15 @@ XLoadFont path=-*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-* fallback kates,-xos4-ter
 ```
 
 
+## Make dlopen libraries compatible with valgrind
 
+Valgrind is a utility that checks for various memory errors. Unfortunately it has an issue with libraries/plugins that are loaded with dlopen. Valgrind doesn't map function addresses to function names until the program exits, but unfortunately by then some libraries that were opened with dlopen may have been unloaded from memory by dlclose, producting valgrind output that does not know which functions were called. This can be solved using the 'pretend' action against the 'dlclose' function, like so:
+
+```
+program lua
+{
+dlclose pretend
+}
+```
+
+This will prevent dlclose from being called at program exit, and thus function call names should be output correctly from valgrind.

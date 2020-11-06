@@ -16,7 +16,7 @@ unsigned int enhancer_flags=0;
 int enhancer_log_fd=-1;
 
 int enhancer_argc;
-const char **enhancer_argv;
+char **enhancer_argv;
 
 
 

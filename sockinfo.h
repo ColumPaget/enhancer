@@ -6,7 +6,7 @@
 typedef struct
 {
 int socket;
-struct sockaddr *sa;
+const struct sockaddr *sa;
 socklen_t salen;
 int family;
 char *address;
@@ -20,7 +20,7 @@ gid_t gid;
 
 
 const char *sockinfo_family_name(TSockInfo *SockInfo);
-TSockInfo *enhancer_createSockInfo(int FuncID, int socket, struct sockaddr *sa, int salen);
+TSockInfo *enhancer_createSockInfo(int FuncID, int socket, const struct sockaddr *sa, int salen);
 void enhancer_destroySockInfo(TSockInfo *SI);
 
 #endif

@@ -1,5 +1,4 @@
 #include "net.h"
-#include <arpa/inet.h>
 #include <netdb.h>
 
 int net_get_salen(struct sockaddr *sa)

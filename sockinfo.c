@@ -1,6 +1,6 @@
 #include "sockinfo.h"
 #include "config.h"
-
+#include "net.h"
 
 
 const char *sockinfo_family_name(TSockInfo *SockInfo)
@@ -88,7 +88,7 @@ return(sock_family);
 }
 
 
-TSockInfo *enhancer_createSockInfo(int FuncID, int socket, struct sockaddr *sa, int salen)
+TSockInfo *enhancer_createSockInfo(int FuncID, int socket, const struct sockaddr *sa, int salen)
 {
 struct sockaddr_in6 *sa_in6;
 struct sockaddr_in *sa_in;

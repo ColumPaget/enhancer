@@ -1,6 +1,7 @@
-OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
+OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
 FLAGS=-g -fPIC -g -O2
 CC=gcc
+VERSION=1.2
 
 all: enhancer.so
 
@@ -30,6 +31,9 @@ config.o: config.c config.h common.h
 
 hooks.o: hooks.c hooks.h common.h
 	$(CC) $(FLAGS) -c hooks.c
+
+dl_hooks.o: dl_hooks.c dl_hooks.h common.h
+	$(CC) $(FLAGS) -c dl_hooks.c
 
 exec_hooks.o: exec_hooks.c exec_hooks.h common.h
 	$(CC) $(FLAGS) -c exec_hooks.c

@@ -3,6 +3,7 @@
 #include "config.h"
 #include "x11_hooks.h"
 #include "time_hooks.h"
+#include "dl_hooks.h"
 #include "vars.h"
 #include <dlfcn.h>
 #include <sys/types.h>
@@ -24,8 +25,8 @@ XFontStruct *(*enhancer_real_XLoadQueryFont)(Display *display, const char *name)
 int (*enhancer_real_XSendEvent)(Display *display, Window win, int propagate, long event_mask, void *event)=NULL;
 int (*enhancer_real_XInternAtom)(Display *display, void *Atom, int Replace)=NULL;
 const char *(*enhancer_real_XGetAtomName)(Display *display, Atom Atom)=NULL;
-int (*enhancer_real_XSetCommand)(Display *display, Window *win, char *argv, int argc)=NULL;
-int (*enhancer_real_XChangeWindowAttributes)(Display *disp, Window *win, int Mask, void *WinAttr);
+int (*enhancer_real_XSetCommand)(Display *display, Window win, char **argv, int argc)=NULL;
+int (*enhancer_real_XChangeWindowAttributes)(Display *disp, Window win, int Mask, void *WinAttr);
 int (*enhancer_real_XSetErrorHandler)(int (*handler)(Display *, XErrorEvent *))=NULL; 
 int (*enhancer_real_XChangeProperty)(Display *display, Window w, Atom property, Atom type, int format, int mode, unsigned char *data, int nelements)=NULL; 
 int (*enhancer_real_XNextEvent)(Display *display, XEvent *ev)=NULL; 
@@ -37,7 +38,7 @@ int (*enhancer_real_XNextEvent)(Display *display, XEvent *ev)=NULL;
 
 Atom ATOM_STRING, ATOM_WMCLASS, ATOM_WMNAME;
 Display *g_Display=NULL;
-Window g_MainWindow=NULL;
+Window g_MainWindow;
 
 void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *StateStr)
 {
@@ -46,7 +47,7 @@ void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *S
 
 		if (! enhancer_real_XInternAtom) return;
     StateAtom=enhancer_real_XInternAtom(disp, "_NET_WM_STATE", False);
-    StateValue=enhancer_real_XInternAtom(disp, StateStr, False);
+    StateValue=enhancer_real_XInternAtom(disp, (char *) StateStr, False);
 
 
     memset( &event, 0, sizeof (XEvent) );
@@ -71,6 +72,7 @@ void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *S
 void X11SetWindowState(Display *disp, Window win, const char *StateStr)
 {
 XSetWindowAttributes WinAttr;
+
 
 		if (strcmp(StateStr, "UNMANAGED")==0) 
 		{
@@ -231,7 +233,7 @@ return(BadFont);
 int XChangeProperty(Display *display, Window w, Atom property, Atom type, int format, int mode, _Xconst unsigned char *data, int nelements)
 {
 int result;
-unsigned char *Name=NULL, *Value=NULL, *Redirect=NULL;
+char *Name=NULL, *Value=NULL, *Redirect=NULL;
 
 Name=enhancer_strcpy(Name, enhancer_real_XGetAtomName(display, property));
 if (type==ATOM_STRING) Value=enhancer_strncat(Value, data, nelements);
@@ -258,13 +260,13 @@ return(result);
 
 int X11SetProgName(Display *display, Window w, const char *Name)
 {
-return(enhancer_real_XChangeProperty(display, w, ATOM_WMNAME, ATOM_STRING, 8, PropModeReplace, (unsigned const char *) Name, strlen(Name)));
+return(enhancer_real_XChangeProperty(display, w, ATOM_WMNAME, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
 }
 
 
 int X11SetProgClass(Display *display, Window w, const char *Name)
 {
-return(enhancer_real_XChangeProperty(display, w, ATOM_WMCLASS, ATOM_STRING, 8, PropModeReplace, (unsigned const char *) Name, strlen(Name)));
+return(enhancer_real_XChangeProperty(display, w, ATOM_WMCLASS, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
 }
 
 
@@ -291,22 +293,6 @@ return(disp);
 
 
 /*
-
-void X11Update()
-{
-time_t last=0, Now;
-char *Tempstr=NULL;
-
-Now=enhancer_gettime();
-if (Now > last)
-{
-last=Now;
-//Tempstr=enhancer_format_str(Tempstr, "%T $(WM_NAME)", "", "", "");
-//if (g_MainWindow) X11SetProgName(g_Display, g_MainWindow, Tempstr);
-//XSync(g_Display, 0);
-destroy(Tempstr);
-}
-}
 
 
 int XNextEvent(Display *display, XEvent *ev)
@@ -341,7 +327,7 @@ return(FALSE);
 
 void enhancer_x11_hooks()
 {
-void* handle = dlopen("libX11.so",RTLD_LAZY);
+void* handle = enhancer_real_dlopen("libX11.so",RTLD_LAZY);
 
 if (! handle) 
 {

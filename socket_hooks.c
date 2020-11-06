@@ -5,7 +5,6 @@
 #include "socks.h"
 #include <dlfcn.h>
 #include <sys/types.h>
-#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -222,7 +221,7 @@ TSockInfo *sockinfo;
 
 fd=enhancer_real_accept(socket, address, address_len);
 
-sockinfo=enhancer_createSockInfo(FUNC_ACCEPT, fd, address, address_len);
+sockinfo=enhancer_createSockInfo(FUNC_ACCEPT, fd, address, *address_len);
 Flags=enhancer_checkconfig_socket_function(FUNC_ACCEPT, "accept", sockinfo);
 
 if (Flags & FLAG_DENY) 
