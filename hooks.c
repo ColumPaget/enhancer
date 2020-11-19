@@ -164,7 +164,9 @@ Flags=enhancer_checkconfig_chfile_function(FUNC_FORK, "fork", NULL, NULL, 0, 0);
 if (Flags & FLAG_DENY) return(-1);
 if (Flags & FLAG_PRETEND) return(getpid());
 
-setenv("LD_PRELOAD", getenv("LD_PRELOAD"), 1);
+if ((enhancer_flags & ENHANCER_STATE_NO_DESCEND)) setenv("LD_PRELOAD", "", 1);
+else setenv("LD_PRELOAD", getenv("LD_PRELOAD"), 1);
+
 
 if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("fork");
 return(enhancer_real_fork());
@@ -178,7 +180,8 @@ Flags=enhancer_checkconfig_chfile_function(FUNC_FORK, "fork", NULL, NULL, 0, 0);
 if (Flags & FLAG_DENY) return(-1);
 if (Flags & FLAG_PRETEND) return(getpid());
 
-setenv("LD_PRELOAD", getenv("LD_PRELOAD"), 1);
+if ((enhancer_flags & ENHANCER_STATE_NO_DESCEND)) setenv("LD_PRELOAD", "", 1);
+else setenv("LD_PRELOAD", getenv("LD_PRELOAD"), 1);
 
 if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("vfork");
 return(enhancer_real_vfork());

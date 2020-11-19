@@ -22,7 +22,7 @@ Enhancer is written by Colum Paget. All patches/bugreports/requests should be se
 PROGRAMS THAT DON'T WORK WITH ENHANCER
 ======================================
 
-Some programs will not work with enhancer. Enhancer relies on intercepting calls to shared libraries, so if a program is statically linked then enhancer will not be able to intercept function calls. Furthermore enhancer has been seen to cause issues for some complex programs, like the Pale Moon webbrowser, and also does not play well with emulators like wine. At least one program (ogg123) has been seen to be able to mysteriously make calls to 'fopen' without going through enhancer. Finally, while enhancer likely does have some use for system monitoring or hardening, the user should be aware that there are methods of avoiding triggering enhancer functions, for instance by calling kernel syscalls directly rather than going through libc. Enhancer is primarily intended to add features or fix a few common types of bug, not really as a security tool, though it still has some value in that area.
+Some programs will not work with enhancer. Enhancer relies on intercepting calls to shared libraries, so if a program is statically linked then enhancer will not be able to intercept function calls. Furthermore enhancer has been seen to cause issues for some complex programs, like the Pale Moon webbrowser, and also does not play well with emulators like wine. Finally, while enhancer likely does have some use for system monitoring or hardening, the user should be aware that there are methods of avoiding triggering enhancer functions, for instance by calling kernel syscalls directly rather than going through libc. Enhancer is primarily intended to add features or fix a few common types of bug, not really as a security tool, though it still has some value in that area.
 
 For these reasons enhancer should not be rashly applied to all programs running on a system by adding it to /etc/ld.so.preload, as this may cause major system problems. A better solution is to use 'bash alias' functions like so:
 
@@ -30,6 +30,7 @@ For these reasons enhancer should not be rashly applied to all programs running 
 alias mpg123='LD_PRELOAD=/usr/local/lib/enhancer.so mpg123'
 ```
 
+The 'nodescend' action can be used to prevent a process from passing enhancer.so to its child processes in those situations where those child processes might be disrupted by having a preloaded library.
 
 CONFIG FILE
 ===========
@@ -78,6 +79,19 @@ open path=/etc/passwd redirect /etc/fakeusers
 Applies to the 'open' group of functions. This includes not just open, but open64, openat and fopen too. The match test 'path=/etc/passwd' specifies that this rule only applies when that path is opened. The action 'redirect' instructs that the file `/etc/fakeusers` should be opened instead of `/etc/passwd`.
 
 Match tests include an operator  which can be one of '=', '!=', '=='
+
+
+
+STRING QUOTING
+==============
+
+Enhancer recognizes two styles of quoting in its config file. Firstly via use of double-quotes, and secondly via use of backslash quoting.
+
+```
+	open path="/home/my directory/my file.txt" log "opened file %1"
+	open path=/home/my\ directory/my\ file.txt log "opened file %1"
+```
+
 
 
 
@@ -230,6 +244,7 @@ copyclone       clone (copy) file into current directory
 linkclone       clone (hardlink) file into current directory
 ipmap           only for 'gethostbyname/getaddrinfo'. Map name to 'fake' IP address. See 'IP MAPPING' below.
 writejail       prefix all writes with the filepath given as a string argument (poor man's chroot)
+nodescend       don't propagate enhancer.so to child processes
 ```
 
 The 'pretend' action is only supported for the functions: bind, dlclose, unlink, unlinkat, fsync, fdatasync, fchown, chown, fchmod, chmod, chroot, fchroot.

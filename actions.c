@@ -372,7 +372,11 @@ int Flags=0;
 
 			case ACT_COPY_CLONE:
 			case ACT_LINK_CLONE:
-			enhancer_action_clone(Act->Type, Act->StrArg);
+				enhancer_action_clone(Act->Type, Act->StrArg);
+			break;
+
+			case ACT_NO_DESCEND:
+				enhancer_flags |= ENHANCER_STATE_NO_DESCEND;	
 			break;
 		}
 	}

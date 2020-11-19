@@ -54,6 +54,29 @@ return(result);
 
 
 
+char *enhancer_strcpy_dequote(char *dest, const char *src)
+{
+	int dpos=0, i, slen;
+	const char *ptr;
+
+	slen=strlen(src);
+
+	dest=(char *) realloc(dest, slen+10);
+	for (ptr=src; *ptr != '\0'; ptr++)
+	{
+		if (*ptr != '\\')
+		{
+		dest[dpos]=*ptr;
+		dpos++;
+		}
+	}
+
+	dest[dpos]='\0';
+
+	return(dest);
+}
+
+
 char *enhancer_strncat(char *dest, const char *src, int slen)
 {
 	int dlen;
@@ -75,11 +98,13 @@ char *enhancer_strncat(char *dest, const char *src, int slen)
 }
 
 
+
 char *enhancer_strcpy(char *dest, const char *src)
 {
 if (dest) *dest='\0';
 return(enhancer_strncat(dest, src, 0));
 }
+
 
 const char *enhancer_istrtok(const char *Str, const char *Dividers, char **Tok)
 {
@@ -102,7 +127,14 @@ switch (*sptr)
 {
 	case '"':
 	eptr=sptr+1;
-	while ((*eptr !='\0') && (*eptr != *sptr)) eptr++;
+	while ((*eptr !='\0') && (*eptr != *sptr)) 
+	{
+		//don't treat a quoted character as an end-quote
+		if (*eptr == '\\') eptr++;
+
+		//iterate ptr, but not if we're at end of string
+		if (*eptr != '\0') eptr++;
+	}
 	sptr++;
 	rptr=eptr+1;
 	break;
@@ -114,10 +146,13 @@ switch (*sptr)
 
 	default:
 	eptr=sptr;
-	while ((*eptr !='\0') && (! strchr(Dividers,*eptr)))
+	while (*eptr != '\0') 
 	{
-		if (*eptr=='\n') break;
-		 eptr++;
+		if (*eptr=='\\') eptr++;
+		else if (strchr(Dividers, *eptr)) break;
+		else if (*eptr=='\n') break;
+
+		if (*eptr != '\0') eptr++;
 	}
 	rptr=eptr;
 	break;
@@ -448,7 +483,6 @@ while (ptr)
 {
 ptr++;
 Tempstr=enhancer_strncat(Tempstr, path, ptr-path);
-fprintf(stderr, "mkdir: %s\n", Tempstr);
 mkdir(Tempstr, mode);
 ptr=strchr(ptr, '/');
 }
