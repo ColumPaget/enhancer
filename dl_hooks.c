@@ -14,11 +14,11 @@ char *Redirect=NULL;
 int Flags;
 void *handle;
 
-if (! enhancer_real_dlclose) enhancer_get_real_functions();
+if (! enhancer_real_dlopen) enhancer_get_real_functions();
 
 Flags=enhancer_checkconfig_with_redirect(FUNC_DLOPEN, "dlopen", path, "", flags, 0, &Redirect);
 
-if (Flags & FLAG_DENY) 
+if ( (Flags & FLAG_DENY) || (enhancer_real_dlopen == NULL) )
 {
 	destroy(Redirect);
 	return(NULL);

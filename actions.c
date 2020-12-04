@@ -55,7 +55,6 @@ static void enhancer_action_log(int fd, int Type, const char *Fmt,  const char *
 {
 char *LogStr=NULL;
 
-	if (fd == -1) return;
 	if (! strvalid(Fmt)) return;
 
 	LogStr=enhancer_format_str(LogStr, Fmt, FuncName, Str1, Str2);
@@ -66,6 +65,7 @@ char *LogStr=NULL;
 	case ACT_SYSLOG_CRIT: syslog(LOG_CRIT,"%s",LogStr); break;
 
 	case ACT_LOG:
+		if (fd == -1) return;
 	case ACT_ECHO:
 	case ACT_DEBUG:
 		LogStr=enhancer_strncat(LogStr, "\n", 1);
