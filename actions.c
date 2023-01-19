@@ -8,6 +8,7 @@
 #include <syslog.h>
 #include <wait.h>
 #include <sys/file.h>
+#include <sys/mman.h>
 #include "net.h"
 
 char *EnhancerChrootDir=NULL;
@@ -382,6 +383,15 @@ int enhancer_actions(TEnhancerConfig *Conf, const char *FuncName, const char *St
         case ACT_LINK_CLONE:
             enhancer_action_clone(Act->Type, Act->StrArg);
             break;
+
+	case ACT_MLOCKALL:
+		mlockall(MCL_FUTURE);
+	     break;
+
+	case ACT_MLOCKCURR:
+		mlockall(MCL_CURRENT);
+	     break;
+
 
         case ACT_NO_DESCEND:
             enhancer_flags |= ENHANCER_STATE_NO_DESCEND;

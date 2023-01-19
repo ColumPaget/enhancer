@@ -201,6 +201,8 @@ xtermtitle      set title of xterm compatible terminal. Takes a string argument.
 exec            execute a program/command. Takes string argument.
 sleep           sleep for seconds, takes numeric argument
 usleep          sleep for nanoseconds, takes numeric argument
+mlockall        lock process memory pages, and all future pages, so they are never swapped out
+mlockcurr       lock process current memory pages so they are never swapped out
 redirect        redirect main argument to a different value. Usually used to change file paths.
 fallback        list of fallback arguments. Used with X11 fonts to specify fallbacks if font doesn't load.
 searchpath      only for 'open'. List of directories to search for a file.
