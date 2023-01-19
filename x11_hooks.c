@@ -259,12 +259,12 @@ int XChangeProperty(Display *display, Window w, Atom property, Atom type, int fo
 }
 
 
+/*
 int XSetSelectionOwner(Display *display, Atom selection, Window w, Time when)
 {
-exit(1);
-fprintf(stderr, "XSetSelectionOwner %lu\n", when);
 return(enhancer_real_XSetSelectionOwner(display, selection, w, when));
 }
+*/
 
 
 int X11SetProgName(Display *display, Window w, const char *Name)

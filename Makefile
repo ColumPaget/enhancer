@@ -1,7 +1,7 @@
-OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o x11_hooks.o
-FLAGS=-g -fPIC -g -O2 -I/usr/X11R7/include
+OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
+FLAGS=-g -fPIC -g -O2
 CC=gcc
-VERSION=1.4
+VERSION=1.5
 
 all: enhancer.so
 
