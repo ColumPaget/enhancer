@@ -145,6 +145,7 @@ XMapWindow
 XRaiseWindow
 XLowerWindow
 XSendEvent
+XNextEvent
 XLoadFont
 XChangeProperty
 ```
@@ -238,6 +239,7 @@ xunmanaged      only for 'XMapWindow'. Set window to be unmanaged (borderless).
 xfullscreen     only for 'XMapWindow'. Set window to be fullscreen.
 xtransparent    only for 'XMapWindow'. Try to fake transparency (only works for simple windows).
 xnormal         only for 'XMapWindow'. Set window to be 'normal' (not fullscreen, iconized, etc).
+allow-xsendevent   only for 'XNextEvent'. Allow reception of events produced by XSendEvent even if program (e.g. xterm) doesn't usually allow that.
 unshare         unshare (containers). Experimental. Takes string argument. See 'unshare' below.
 getip           get IP address and store it in variable called 'ip:hostname'
 cd              change directory. Takes string argument

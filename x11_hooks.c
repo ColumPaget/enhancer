@@ -41,6 +41,8 @@ Atom ATOM_STRING, ATOM_WMCLASS, ATOM_WMNAME;
 Display *g_Display=NULL;
 Window g_MainWindow;
 
+
+
 void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *StateStr)
 {
     Atom StateAtom, StateValue;
@@ -143,7 +145,6 @@ int XMapWindow(Display *display, Window win)
     if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
     if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
     if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
-//if (Flags & FLAG_X_TRANSPARENT) XSetWindowBackgroundPixmap(display, win, ParentRelative);
     if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
 
     return(result);
@@ -161,9 +162,7 @@ int XMapRaised(Display *display, Window win)
     if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
     if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
     if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
-//if (Flags & FLAG_X_TRANSPARENT) XSetWindowBackgroundPixmap(display, win, ParentRelative);
     if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
-
 
     enhancer_real_XSetCommand(display, win, enhancer_argv, enhancer_argc);
     result=enhancer_real_XMapRaised(display, win);
@@ -303,18 +302,36 @@ Display *XOpenDisplay(const char *DispID)
 }
 
 
-/*
 
 
 int XNextEvent(Display *display, XEvent *ev)
 {
 int result;
+int Flags=0;
+
 
 result=enhancer_real_XNextEvent(display, ev);
-X11Update();
+
+Flags=enhancer_checkconfig_default(FUNC_XNextEvent, "XNextEvent", "", "", 0, 0);
+switch (ev->type)
+{
+case KeyPress:
+case KeyRelease:
+if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xkey.send_event=False;
+break;
+
+case ButtonPress:
+case ButtonRelease:
+if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xbutton.send_event=False;
+break;
+
+}
+
+//X11Update();
 return(result);
 }
 
+/*
 int XSendEvent(Display *display, Window window, int propagate, long event_mask, void *event)
 {
 return(enhancer_real_XSendEvent(display, window, propagate, event_mask, event));
