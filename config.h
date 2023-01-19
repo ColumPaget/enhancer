@@ -49,13 +49,13 @@ typedef enum {ACT_SETVAR, ACT_SETBASENAME, ACT_LOG, ACT_SEND, ACT_SYSLOG, ACT_SY
 
 
 
-struct enhancer_settings_struct
+typedef struct 
 {
-int memcpy_max;
-int strcpy_max;
-};
+    int memcpy_max;
+    int strcpy_max;
+} enhancer_settings_struct;
 
-struct enhancer_settings_struct enhancer_settings;
+extern enhancer_settings_struct enhancer_settings;
 
 typedef enum {FUNC_ALL, FUNC_MAIN, FUNC_ONEXIT, FUNC_PROGRAM_ARG, FUNC_OPEN, FUNC_CLOSE, FUNC_READ, FUNC_WRITE, FUNC_UNAME, FUNC_DLOPEN, FUNC_DLCLOSE, FUNC_SOCKET, FUNC_CONNECT, FUNC_BIND, FUNC_LISTEN, FUNC_ACCEPT, FUNC_GETHOSTIP, FUNC_SPRINTF, FUNC_FORK, FUNC_EXEC, FUNC_SYSTEM, FUNC_SYSEXEC, FUNC_UNLINK, FUNC_SETUID, FUNC_SETGID, FUNC_CHOWN, FUNC_CHMOD, FUNC_CHDIR, FUNC_CHROOT, FUNC_TIME, FUNC_SETTIME, FUNC_MPROTECT, FUNC_FSYNC, FUNC_FDATASYNC, FUNC_SELECT, FUNC_XMapWindow, FUNC_XRaiseWindow, FUNC_XLowerWindow, FUNC_XSendEvent, FUNC_XLoadFont, FUNC_XChangeProperty} E_Funcs;
 

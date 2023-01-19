@@ -8,26 +8,33 @@
 void *(*enhancer_real_dlopen)(const char *filename, int flag)=NULL;
 int (*enhancer_real_dlclose)(void *handle)=NULL;
 
-void *dlopen(const char *path, int flags)
+void *enhancer_dlopen(const char *filename, int flag)
 {
-char *Redirect=NULL;
-int Flags;
-void *handle;
-
-if (! enhancer_real_dlopen) enhancer_get_real_functions();
-
-Flags=enhancer_checkconfig_with_redirect(FUNC_DLOPEN, "dlopen", path, "", flags, 0, &Redirect);
-
-if ( (Flags & FLAG_DENY) || (enhancer_real_dlopen == NULL) )
-{
-	destroy(Redirect);
-	return(NULL);
+if (! enhancer_real_dlopen) return(NULL);
+return(enhancer_real_dlopen(filename, flag));
 }
 
-handle=enhancer_real_dlopen(Redirect, flags);
-destroy(Redirect);
+void *dlopen(const char *path, int flags)
+{
+    char *Redirect=NULL;
+    int Flags;
+    void *handle;
 
-return(handle);
+    if (! enhancer_real_dlopen) enhancer_get_real_functions();
+
+    Flags=enhancer_checkconfig_with_redirect(FUNC_DLOPEN, "dlopen", path, "", flags, 0, &Redirect);
+
+    if ( (Flags & FLAG_DENY) || (enhancer_real_dlopen == NULL) )
+    {
+        destroy(Redirect);
+        return(NULL);
+    }
+
+    if (! strvalid(Redirect)) Redirect=enhancer_strcpy(Redirect, path);
+    handle=enhancer_real_dlopen(Redirect, flags);
+    destroy(Redirect);
+
+    return(handle);
 }
 
 
@@ -35,22 +42,21 @@ return(handle);
 
 int dlclose(void *handle)
 {
-int Flags;
+    int Flags;
 
-if (! enhancer_real_dlclose) enhancer_get_real_functions();
+    if (! enhancer_real_dlclose) enhancer_get_real_functions();
 
-Flags=enhancer_checkconfig_default(FUNC_DLCLOSE, "dlclose", "", "", 0, 0);
-if (Flags & FLAG_DENY) return(-1);
-if (Flags & FLAG_PRETEND) return(0);
+    Flags=enhancer_checkconfig_default(FUNC_DLCLOSE, "dlclose", "", "", 0, 0);
+    if (Flags & FLAG_DENY) return(-1);
+    if (Flags & FLAG_PRETEND) return(0);
 
-return(enhancer_real_dlclose(handle));
+    return(enhancer_real_dlclose(handle));
 }
-
 
 
 
 void enhancer_dl_hooks()
 {
-if (! enhancer_real_dlopen) enhancer_real_dlopen = dlsym(RTLD_NEXT, "dlopen");
-if (! enhancer_real_dlclose) enhancer_real_dlclose = dlsym(RTLD_NEXT, "dlclose");
+    if (! enhancer_real_dlopen) enhancer_real_dlopen = dlsym(RTLD_NEXT, "dlopen");
+    if (! enhancer_real_dlclose) enhancer_real_dlclose = dlsym(RTLD_NEXT, "dlclose");
 }

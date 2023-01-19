@@ -7,14 +7,14 @@
 
 typedef struct
 {
-char *name;
-char *value;
+    char *name;
+    char *value;
 } TVar;
 
 typedef struct
 {
-int max;
-TVar *vars;
+    int max;
+    TVar *vars;
 } TVarList;
 
 TVarList *enhancer_varlist_create();

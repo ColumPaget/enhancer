@@ -5,17 +5,17 @@
 
 typedef struct
 {
-int socket;
-const struct sockaddr *sa;
-socklen_t salen;
-int family;
-char *address;
-int port;
-char *redirect;
-int ttl;
-pid_t pid;
-uid_t uid;
-gid_t gid;
+    int socket;
+    const struct sockaddr *sa;
+    socklen_t salen;
+    int family;
+    char *address;
+    int port;
+    char *redirect;
+    int ttl;
+    pid_t pid;
+    uid_t uid;
+    gid_t gid;
 } TSockInfo;
 
 

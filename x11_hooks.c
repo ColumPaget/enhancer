@@ -26,10 +26,11 @@ int (*enhancer_real_XSendEvent)(Display *display, Window win, int propagate, lon
 int (*enhancer_real_XInternAtom)(Display *display, void *Atom, int Replace)=NULL;
 const char *(*enhancer_real_XGetAtomName)(Display *display, Atom Atom)=NULL;
 int (*enhancer_real_XSetCommand)(Display *display, Window win, char **argv, int argc)=NULL;
-int (*enhancer_real_XChangeWindowAttributes)(Display *disp, Window win, int Mask, void *WinAttr);
-int (*enhancer_real_XSetErrorHandler)(int (*handler)(Display *, XErrorEvent *))=NULL; 
-int (*enhancer_real_XChangeProperty)(Display *display, Window w, Atom property, Atom type, int format, int mode, unsigned char *data, int nelements)=NULL; 
-int (*enhancer_real_XNextEvent)(Display *display, XEvent *ev)=NULL; 
+int (*enhancer_real_XChangeWindowAttributes)(Display *disp, Window win, int Mask, void *WinAttr)=NULL;
+int (*enhancer_real_XSetErrorHandler)(int (*handler)(Display *, XErrorEvent *))=NULL;
+int (*enhancer_real_XChangeProperty)(Display *display, Window w, Atom property, Atom type, int format, int mode, unsigned char *data, int nelements)=NULL;
+int (*enhancer_real_XSetSelectionOwner)(Display *display, Atom selection, Window w, Time when)=NULL;
+int (*enhancer_real_XNextEvent)(Display *display, XEvent *ev)=NULL;
 
 
 #define WINSTATE_DEL 0
@@ -45,7 +46,7 @@ void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *S
     Atom StateAtom, StateValue;
     XEvent event;
 
-		if (! enhancer_real_XInternAtom) return;
+    if (! enhancer_real_XInternAtom) return;
     StateAtom=enhancer_real_XInternAtom(disp, "_NET_WM_STATE", False);
     StateValue=enhancer_real_XInternAtom(disp, (char *) StateStr, False);
 
@@ -71,15 +72,15 @@ void X11SendSetStateEvent(Display *disp, Window Win, int AddOrDel, const char *S
 
 void X11SetWindowState(Display *disp, Window win, const char *StateStr)
 {
-XSetWindowAttributes WinAttr;
+    XSetWindowAttributes WinAttr;
 
 
-		if (strcmp(StateStr, "UNMANAGED")==0) 
-		{
-		memset(&WinAttr, 0, sizeof(XSetWindowAttributes));
-		WinAttr.override_redirect=True;
-		enhancer_real_XChangeWindowAttributes(disp, win, CWOverrideRedirect, &WinAttr);
-		}
+    if (strcmp(StateStr, "UNMANAGED")==0)
+    {
+        memset(&WinAttr, 0, sizeof(XSetWindowAttributes));
+        WinAttr.override_redirect=True;
+        enhancer_real_XChangeWindowAttributes(disp, win, CWOverrideRedirect, &WinAttr);
+    }
     else if (strcmp(StateStr,  "_NET_WM_STATE_ABOVE") ==0)
     {
         X11SendSetStateEvent(disp, win, WINSTATE_DEL, "_NET_WM_STATE_BELOW");
@@ -87,15 +88,15 @@ XSetWindowAttributes WinAttr;
     }
     else if (strcmp(StateStr,  "_NET_WM_STATE_BELOW") ==0)
     {
-       X11SendSetStateEvent(disp, win, WINSTATE_DEL, "_NET_WM_STATE_ABOVE");
-       X11SendSetStateEvent(disp, win, WINSTATE_ADD, StateStr);
-			 enhancer_real_XLowerWindow(disp, win);
+        X11SendSetStateEvent(disp, win, WINSTATE_DEL, "_NET_WM_STATE_ABOVE");
+        X11SendSetStateEvent(disp, win, WINSTATE_ADD, StateStr);
+        enhancer_real_XLowerWindow(disp, win);
     }
-		else if (strcmp(StateStr, "_NET_WM_STATE_ZORDER")==0)
-		{
+    else if (strcmp(StateStr, "_NET_WM_STATE_ZORDER")==0)
+    {
         X11SendSetStateEvent(disp, win, WINSTATE_DEL, "_NET_WM_STATE_ABOVE");
         X11SendSetStateEvent(disp, win, WINSTATE_DEL, "_NET_WM_STATE_BELOW");
-		}
+    }
     else if (strcmp(StateStr,  "_NET_WM_STATE_SHADED") ==0)
     {
         X11SendSetStateEvent(disp, win, WINSTATE_ADD, "_NET_WM_STATE_SHADED");
@@ -130,165 +131,175 @@ XSetWindowAttributes WinAttr;
 
 int XMapWindow(Display *display, Window win)
 {
-int Flags, result;
+    int Flags, result;
 
-Flags=enhancer_checkconfig_default(FUNC_XMapWindow, "XMapWindow", "", "", 0, 0);
-if (Flags & FLAG_DENY) return(-1);
-enhancer_real_XSetCommand(display, win, enhancer_argv, enhancer_argc);
-result=enhancer_real_XMapWindow(display, win);
+    Flags=enhancer_checkconfig_default(FUNC_XMapWindow, "XMapWindow", "", "", 0, 0);
+    if (Flags & FLAG_DENY) return(-1);
+    enhancer_real_XSetCommand(display, win, enhancer_argv, enhancer_argc);
+    result=enhancer_real_XMapWindow(display, win);
 
-if (Flags & FLAG_X_STAY_ABOVE) X11SetWindowState(display, win, "_NET_WM_STATE_ABOVE");
-if (Flags & FLAG_X_STAY_BELOW) X11SetWindowState(display, win, "_NET_WM_STATE_BELOW");
-if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
-if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
-if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
+    if (Flags & FLAG_X_STAY_ABOVE) X11SetWindowState(display, win, "_NET_WM_STATE_ABOVE");
+    if (Flags & FLAG_X_STAY_BELOW) X11SetWindowState(display, win, "_NET_WM_STATE_BELOW");
+    if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
+    if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
+    if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
 //if (Flags & FLAG_X_TRANSPARENT) XSetWindowBackgroundPixmap(display, win, ParentRelative);
-if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
+    if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
 
-return(result);
+    return(result);
 }
 
 
 int XMapRaised(Display *display, Window win)
 {
-int Flags, result;
+    int Flags, result;
 
-Flags=enhancer_checkconfig_default(FUNC_XMapWindow, "XMapWindow", "", "", 0, 0);
-if (Flags & FLAG_DENY) return(-1);
-if (Flags & FLAG_X_STAY_ABOVE) X11SetWindowState(display, win, "_NET_WM_STATE_ABOVE");
-if (Flags & FLAG_X_STAY_BELOW) X11SetWindowState(display, win, "_NET_WM_STATE_BELOW");
-if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
-if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
-if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
+    Flags=enhancer_checkconfig_default(FUNC_XMapWindow, "XMapWindow", "", "", 0, 0);
+    if (Flags & FLAG_DENY) return(-1);
+    if (Flags & FLAG_X_STAY_ABOVE) X11SetWindowState(display, win, "_NET_WM_STATE_ABOVE");
+    if (Flags & FLAG_X_STAY_BELOW) X11SetWindowState(display, win, "_NET_WM_STATE_BELOW");
+    if (Flags & FLAG_X_ICONIZED) X11SetWindowState(display, win, "_NET_WM_STATE_ICONIZED");
+    if (Flags & FLAG_X_FULLSCREEN) X11SetWindowState(display, win, "_NET_WM_STATE_FULLSCREEN");
+    if (Flags & FLAG_X_NORMAL) X11SetWindowState(display, win, "_NET_WM_STATE_NORMAL");
 //if (Flags & FLAG_X_TRANSPARENT) XSetWindowBackgroundPixmap(display, win, ParentRelative);
-if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
+    if (Flags & FLAG_X_UNMANAGED) X11SetWindowState(display, win, "UNMANAGED");
 
 
-enhancer_real_XSetCommand(display, win, enhancer_argv, enhancer_argc);
-result=enhancer_real_XMapRaised(display, win);
-return(result);
+    enhancer_real_XSetCommand(display, win, enhancer_argv, enhancer_argc);
+    result=enhancer_real_XMapRaised(display, win);
+    return(result);
 }
 
 
 
 int XRaiseWindow(Display *display, Window win)
 {
-int result;
+    int result;
 
-result=enhancer_checkconfig_default(FUNC_XRaiseWindow, "XRaiseWindow", "", "", 0, 0);
-if (result & FLAG_DENY) return(-1);
+    result=enhancer_checkconfig_default(FUNC_XRaiseWindow, "XRaiseWindow", "", "", 0, 0);
+    if (result & FLAG_DENY) return(-1);
 
-return(enhancer_real_XRaiseWindow(display, win));
+    return(enhancer_real_XRaiseWindow(display, win));
 }
 
 
 int XLowerWindow(Display *display, Window win)
 {
-int result;
+    int result;
 
-result=enhancer_checkconfig_default(FUNC_XLowerWindow, "XLowerWindow", "", "", 0, 0);
-if (result & FLAG_DENY) return(-1);
+    result=enhancer_checkconfig_default(FUNC_XLowerWindow, "XLowerWindow", "", "", 0, 0);
+    if (result & FLAG_DENY) return(-1);
 
-return(enhancer_real_XLowerWindow(display, win));
+    return(enhancer_real_XLowerWindow(display, win));
 }
 
 
 
 XFontStruct *XLoadQueryFont(Display *display, const char *name)
 {
-char *font_list=NULL, *font_name=NULL;
-const char *ptr;
-XFontStruct *FS=NULL;
-int Flags;
+    char *font_list=NULL, *font_name=NULL;
+    const char *ptr;
+    XFontStruct *FS=NULL;
+    int Flags;
 
-if (! enhancer_real_XLoadQueryFont) enhancer_x11_hooks();
-font_list=enhancer_strcpy(font_list, name);
-Flags=enhancer_checkconfig_exec_function(FUNC_XLoadFont, "XLoadFont", name, &font_list, NULL);
+    if (! enhancer_real_XLoadQueryFont) enhancer_x11_hooks();
+    font_list=enhancer_strcpy(font_list, name);
+    Flags=enhancer_checkconfig_exec_function(FUNC_XLoadFont, "XLoadFont", name, &font_list, NULL);
 
-ptr=enhancer_strtok(font_list, ",", &font_name);
-while (ptr)
-{
-FS=enhancer_real_XLoadQueryFont(display, font_name);
-if (FS) break;
-ptr=enhancer_strtok(ptr, ",", &font_name);
-}
+    ptr=enhancer_strtok(font_list, ",", &font_name);
+    while (ptr)
+    {
+        FS=enhancer_real_XLoadQueryFont(display, font_name);
+        if (FS) break;
+        ptr=enhancer_strtok(ptr, ",", &font_name);
+    }
 
-destroy(font_list);
-destroy(font_name);
-return(FS);
+    destroy(font_list);
+    destroy(font_name);
+    return(FS);
 }
 
 
 Font XLoadFont(Display *display, const char *name)
 {
-XFontStruct *FS;
+    XFontStruct *FS;
 
-FS=XLoadQueryFont(display, name);
-if (FS) return(FS->fid);
-return(BadFont);
+    FS=XLoadQueryFont(display, name);
+    if (FS) return(FS->fid);
+    return(BadFont);
 }
 
 
 
 int XChangeProperty(Display *display, Window w, Atom property, Atom type, int format, int mode, _Xconst unsigned char *data, int nelements)
 {
-int result;
-char *Name=NULL, *Value=NULL, *Redirect=NULL;
+    int result;
+    char *Name=NULL, *Value=NULL, *Redirect=NULL;
 
-Name=enhancer_strcpy(Name, enhancer_real_XGetAtomName(display, property));
-if (type==ATOM_STRING) Value=enhancer_strncat(Value, data, nelements);
-else Value=enhancer_strcpy(Value, "");
+    Name=enhancer_strcpy(Name, enhancer_real_XGetAtomName(display, property));
+    if (type==ATOM_STRING) Value=enhancer_strncat(Value, data, nelements);
+    else Value=enhancer_strcpy(Value, "");
 
-g_MainWindow=w;
-enhancer_setvar(Name, Value);
+    g_MainWindow=w;
+    enhancer_setvar(Name, Value);
 
-Redirect=enhancer_strcpy(Redirect, Value);
-result=enhancer_checkconfig_with_redirect(FUNC_XChangeProperty, "XChangeProperty", Name, Value, 0, 0, &Redirect);
+    Redirect=enhancer_strcpy(Redirect, Value);
+    result=enhancer_checkconfig_with_redirect(FUNC_XChangeProperty, "XChangeProperty", Name, Value, 0, 0, &Redirect);
 
-if (type == ATOM_STRING) 
+    if (type == ATOM_STRING)
+    {
+        result=enhancer_real_XChangeProperty(display, w, property, type, format, mode, Redirect, strlen(Redirect));
+    }
+    else result=enhancer_real_XChangeProperty(display, w, property, type, format, mode, data, nelements);
+
+    destroy(Redirect);
+    destroy(Name);
+    destroy(Value);
+
+    return(result);
+}
+
+
+int XSetSelectionOwner(Display *display, Atom selection, Window w, Time when)
 {
-	result=enhancer_real_XChangeProperty(display, w, property, type, format, mode, Redirect, strlen(Redirect));
+exit(1);
+fprintf(stderr, "XSetSelectionOwner %lu\n", when);
+return(enhancer_real_XSetSelectionOwner(display, selection, w, when));
 }
-else result=enhancer_real_XChangeProperty(display, w, property, type, format, mode, data, nelements);
 
-destroy(Redirect);
-destroy(Name);
-destroy(Value);
-
-return(result); 
-}
 
 int X11SetProgName(Display *display, Window w, const char *Name)
 {
-return(enhancer_real_XChangeProperty(display, w, ATOM_WMNAME, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
+    return(enhancer_real_XChangeProperty(display, w, ATOM_WMNAME, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
 }
 
 
 int X11SetProgClass(Display *display, Window w, const char *Name)
 {
-return(enhancer_real_XChangeProperty(display, w, ATOM_WMCLASS, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
+    return(enhancer_real_XChangeProperty(display, w, ATOM_WMCLASS, ATOM_STRING, 8, PropModeReplace, (unsigned char *) Name, strlen(Name)));
 }
+
 
 
 Display *XOpenDisplay(const char *DispID)
 {
-Display *disp;
+    Display *disp;
 
-if (! enhancer_real_XOpenDisplay)
-{
-enhancer_x11_hooks();
-if (! enhancer_real_XOpenDisplay) printf("XOpenDisplay not mapped!\n");
-}
+    if (! enhancer_real_XOpenDisplay)
+    {
+        enhancer_x11_hooks();
+        if (! enhancer_real_XOpenDisplay) printf("XOpenDisplay not mapped!\n");
+    }
 
-disp=enhancer_real_XOpenDisplay(DispID);
-g_Display=disp;
+    disp=enhancer_real_XOpenDisplay(DispID);
+    g_Display=disp;
 
-ATOM_STRING=enhancer_real_XInternAtom(disp, "STRING", 0);
-ATOM_WMNAME=enhancer_real_XInternAtom(disp, "WM_NAME", 0);
-ATOM_WMCLASS=enhancer_real_XInternAtom(disp, "WM_CLASS", 0);
+    ATOM_STRING=enhancer_real_XInternAtom(disp, "STRING", 0);
+    ATOM_WMNAME=enhancer_real_XInternAtom(disp, "WM_NAME", 0);
+    ATOM_WMCLASS=enhancer_real_XInternAtom(disp, "WM_CLASS", 0);
 
 
-return(disp);
+    return(disp);
 }
 
 
@@ -312,44 +323,45 @@ return(enhancer_real_XSendEvent(display, window, propagate, event_mask, event));
 
 int enhancer_X11ErrorHandler(Display *Disp, XErrorEvent *Event)
 {
-char *Tempstr=NULL;
+    char *Tempstr=NULL;
 
-Tempstr=realloc(Tempstr, 512);
+    Tempstr=realloc(Tempstr, 512);
 //XGetErrorText(Disp, Event->error_code, Tempstr, 512);
 
 //fprintf(stderr,"X11 Error: %s\n", Tempstr);
 
-destroy(Tempstr);
-return(FALSE);
+    destroy(Tempstr);
+    return(FALSE);
 }
 
 
 
 void enhancer_x11_hooks()
 {
-void* handle = enhancer_real_dlopen("libX11.so",RTLD_LAZY);
+    void* handle = enhancer_dlopen("libX11.so",RTLD_LAZY);
 
-if (! handle) 
-{
-	handle=RTLD_NEXT;
-}
+    if (! handle)
+    {
+        handle=RTLD_NEXT;
+    }
 
-if (! enhancer_real_XOpenDisplay) enhancer_real_XOpenDisplay = dlsym(handle, "XOpenDisplay");
-if (! enhancer_real_XMapWindow) enhancer_real_XMapWindow = dlsym(handle, "XMapWindow");
-if (! enhancer_real_XMapRaised) enhancer_real_XMapRaised = dlsym(handle, "XMapRaised");
-if (! enhancer_real_XRaiseWindow) enhancer_real_XRaiseWindow = dlsym(handle, "XRaiseWindow");
-if (! enhancer_real_XLowerWindow) enhancer_real_XLowerWindow = dlsym(handle, "XLowerWindow");
-if (! enhancer_real_XLoadQueryFont) enhancer_real_XLoadQueryFont = dlsym(handle, "XLoadQueryFont");
-if (! enhancer_real_XLoadFont) enhancer_real_XLoadFont = dlsym(handle, "XLoadFont");
-if (! enhancer_real_XSendEvent) enhancer_real_XSendEvent = dlsym(handle, "XSendEvent");
-if (! enhancer_real_XInternAtom) enhancer_real_XInternAtom = dlsym(handle, "XInternAtom");
-if (! enhancer_real_XGetAtomName) enhancer_real_XGetAtomName = dlsym(handle, "XGetAtomName");
-if (! enhancer_real_XSetCommand) enhancer_real_XSetCommand = dlsym(handle, "XSetCommand");
-if (! enhancer_real_XChangeWindowAttributes) enhancer_real_XChangeWindowAttributes = dlsym(handle, "XChangeWindowAttributes");
-if (! enhancer_real_XSetErrorHandler) enhancer_real_XSetErrorHandler = dlsym(handle, "XSetErrorHandler");
-if (! enhancer_real_XChangeProperty) enhancer_real_XChangeProperty = dlsym(handle, "XChangeProperty");
-if (! enhancer_real_XNextEvent) enhancer_real_XNextEvent = dlsym(handle, "XNextEvent");
+    if (! enhancer_real_XOpenDisplay) enhancer_real_XOpenDisplay = dlsym(handle, "XOpenDisplay");
+    if (! enhancer_real_XMapWindow) enhancer_real_XMapWindow = dlsym(handle, "XMapWindow");
+    if (! enhancer_real_XMapRaised) enhancer_real_XMapRaised = dlsym(handle, "XMapRaised");
+    if (! enhancer_real_XRaiseWindow) enhancer_real_XRaiseWindow = dlsym(handle, "XRaiseWindow");
+    if (! enhancer_real_XLowerWindow) enhancer_real_XLowerWindow = dlsym(handle, "XLowerWindow");
+    if (! enhancer_real_XLoadQueryFont) enhancer_real_XLoadQueryFont = dlsym(handle, "XLoadQueryFont");
+    if (! enhancer_real_XLoadFont) enhancer_real_XLoadFont = dlsym(handle, "XLoadFont");
+    if (! enhancer_real_XSendEvent) enhancer_real_XSendEvent = dlsym(handle, "XSendEvent");
+    if (! enhancer_real_XInternAtom) enhancer_real_XInternAtom = dlsym(handle, "XInternAtom");
+    if (! enhancer_real_XGetAtomName) enhancer_real_XGetAtomName = dlsym(handle, "XGetAtomName");
+    if (! enhancer_real_XSetCommand) enhancer_real_XSetCommand = dlsym(handle, "XSetCommand");
+    if (! enhancer_real_XChangeWindowAttributes) enhancer_real_XChangeWindowAttributes = dlsym(handle, "XChangeWindowAttributes");
+    if (! enhancer_real_XSetErrorHandler) enhancer_real_XSetErrorHandler = dlsym(handle, "XSetErrorHandler");
+    if (! enhancer_real_XChangeProperty) enhancer_real_XChangeProperty = dlsym(handle, "XChangeProperty");
+    if (! enhancer_real_XNextEvent) enhancer_real_XNextEvent = dlsym(handle, "XNextEvent");
+    if (! enhancer_real_XSetSelectionOwner) enhancer_real_XSetSelectionOwner = dlsym(handle, "XSetSelectionOwner");
 
-enhancer_real_XSetErrorHandler(enhancer_X11ErrorHandler);
+    enhancer_real_XSetErrorHandler(enhancer_X11ErrorHandler);
 }
 

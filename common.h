@@ -1,4 +1,3 @@
-
 #ifndef ENHANCER_COMMON_H
 #define ENHANCER_COMMON_H
 
@@ -38,27 +37,27 @@
 
 typedef struct
 {
-int Type;
-int Op;
-int IntArg;
-char *StrArg;
+    int Type;
+    int Op;
+    int IntArg;
+    char *StrArg;
 } TConfigItem;
 
 typedef struct
 {
-  int Type;
-  int GlobalFlags;
-  int Flags;
-	int NoOfMatches;
-	TConfigItem *Matches;
-  int NoOfActions;
-  TConfigItem *Actions;
+    int Type;
+    int GlobalFlags;
+    int Flags;
+    int NoOfMatches;
+    TConfigItem *Matches;
+    int NoOfActions;
+    TConfigItem *Actions;
 } TEnhancerConfig;
 
 typedef struct
 {
-int NoOfConfigs;
-TEnhancerConfig *Items;
+    int NoOfConfigs;
+    TEnhancerConfig *Items;
 } TEnhancerFuncConfig;
 
 
@@ -88,7 +87,7 @@ extern char * (*enhancer_real_strncpy)(char *dest, const char *src, size_t len);
 extern void *(*enhancer_real_memcpy)(void *dest, const void *src, size_t len);
 extern int (*enhancer_real_execl)(const char *path, const char *arg, ...);
 extern int (*enhancer_real_execlp)(const char *file, const char *arg, ...);
-//extern int (*enhancer_real_execle)(const char *path, const char *arg, ..., char * const envp[]); 
+//extern int (*enhancer_real_execle)(const char *path, const char *arg, ..., char * const envp[]);
 extern int (*enhancer_real_execv)(const char *path, char *const argv[]);
 extern int (*enhancer_real_execvp)(const char *file, char *const argv[]);
 extern int (*enhancer_real_execvpe)(const char *file, char *const argv[], char *const envp[]);
@@ -109,6 +108,6 @@ char *enhancer_read_file(char *RetBuff, const char *Path);
 void enhancer_copyfile(const char *src, const char *dst);
 int enhancer_match_token_from_list(const char *Token, char *List[]);
 char *enhancer_format_str(char *RetStr, const char *Fmt, const char *FuncName, const char *Str1, const char *Str2);
-
+char *enhancer_strcpy_dequote(char *dest, const char *src);
 
 #endif
