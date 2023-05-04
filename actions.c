@@ -279,7 +279,7 @@ int enhancer_actions(TEnhancerConfig *Conf, const char *FuncName, const char *St
         case ACT_PIDFILE:
         case ACT_LOCKFILE:
             Tempstr=enhancer_format_str(Tempstr, Act->StrArg, "", "", "");
-            fd=open(Tempstr, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+            fd=enhancer_real_open(Tempstr, O_CREAT | O_TRUNC | O_WRONLY, 0600);
             if (fd > -1)
             {
                 if (Act->Type==ACT_LOCKFILE) flock(fd, LOCK_EX);

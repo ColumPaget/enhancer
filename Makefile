@@ -1,5 +1,6 @@
-OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
-FLAGS=-g -fPIC -g -O2 -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DHAVE_STDIO_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UNISTD_H=1 -DSTDC_HEADERS=1 -Drestrict=__restrict__ -DHAVE_LIBC=1 -DHAVE_UNSHARE=1
+OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o file_shred.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o filesys_hooks.o socket_hooks.o config.o net.o socks.o 
+CFLAGS=-g -fPIC -g -O2 
+FLAGS=$(CFLAGS) -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -D_FILE_OFFSET_BITS=64 -Drestrict=__restrict -DHAVE_LIBC=1 -DHAVE_UNSHARE=1 -DGETTIMEOFDAY_TRAD=1
 CC=gcc
 VERSION=1.5
 
@@ -27,11 +28,21 @@ actions.o: actions.c actions.h common.h
 exit.o: exit.c exit.h common.h
 	$(CC) $(FLAGS) -c exit.c
 
+file_shred.o: file_shred.c file_shred.h common.h
+	$(CC) $(FLAGS) -c file_shred.c
+
 config.o: config.c config.h common.h
 	$(CC) $(FLAGS) -c config.c
 
 hooks.o: hooks.c hooks.h common.h
 	$(CC) $(FLAGS) -c hooks.c
+
+#use CFLAGS no FLAGS for file_hooks, due to OFFSET_BITS_64 causing issues
+file_hooks.o: file_hooks.c file_hooks.h common.h
+	$(CC) $(CFLAGS) -c file_hooks.c
+
+filesys_hooks.o: filesys_hooks.c filesys_hooks.h common.h
+	$(CC) $(FLAGS) -c filesys_hooks.c
 
 dl_hooks.o: dl_hooks.c dl_hooks.h common.h
 	$(CC) $(FLAGS) -c dl_hooks.c
@@ -41,9 +52,6 @@ exec_hooks.o: exec_hooks.c exec_hooks.h common.h
 
 time_hooks.o: time_hooks.c time_hooks.h common.h
 	$(CC) $(FLAGS) -c time_hooks.c
-
-file_hooks.o: file_hooks.c file_hooks.h common.h
-	$(CC) $(FLAGS) -c file_hooks.c
 
 socket_hooks.o: socket_hooks.c socket_hooks.h common.h
 	$(CC) $(FLAGS) -c socket_hooks.c

@@ -71,6 +71,7 @@ void __attribute__ ((constructor)) enhancer_init(void);
 int StrListMatch(const char *MatchStr, const char *List);
 extern void enhancer_fail_die(const char *FuncName);
 extern int (*enhancer_real_open)(const char *path, int oflag, ...);
+extern int (*enhancer_real_openat)(int atfd, const char *path, int oflag, ...);
 extern int (*enhancer_real_open64)(const char *path, int oflag, ...);
 extern int (*enhancer_real_close)(int fd);
 extern int (*enhancer_real_write)(int fd, const void *Buffer, size_t len);

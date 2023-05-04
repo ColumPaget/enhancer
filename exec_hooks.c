@@ -4,7 +4,7 @@
 #include <dlfcn.h>
 #include <sys/types.h>
 
-int (*enhancer_real_execve)(const char *path, const char *args[], const char *env[])=NULL;
+int (*enhancer_real_execve)(const char *path, char *const args[], char *const env[])=NULL;
 int (*enhancer_real_execl)(const char *path, const char *arg, ...)=NULL;
 int (*enhancer_real_system)(const char *command)=NULL;
 
@@ -110,14 +110,15 @@ int execve(const char *command, char *const args[], char *const env[])
 {
     int Flags, result=-1, i;
     char *Sanitised=NULL;
-    const char **p_args, *ptr;
+    const char *ptr;
+    char *const *p_args;
     char **sani_args=NULL;
 
 
     Flags=enhancer_checkconfig_default(FUNC_EXEC, "exec", command, "", 0, 0);
     Flags |= enhancer_checkconfig_default(FUNC_SYSTEM, "sysrun", command, "", 0, 0);
 
-    p_args=(const char **) args;
+    p_args=args;
     if (Flags & SANITISE_FLAGS)
     {
         for (i=0; args[i] != NULL; i++)

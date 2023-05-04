@@ -9,6 +9,7 @@
 #include "dl_hooks.h"
 #include "exec_hooks.h"
 #include "file_hooks.h"
+#include "filesys_hooks.h"
 #include "time_hooks.h"
 #include "vars.h"
 
@@ -283,6 +284,7 @@ void enhancer_get_real_functions()
     enhancer_exec_hooks();
     enhancer_time_hooks();
     enhancer_file_hooks();
+    enhancer_filesys_hooks();
     enhancer_socket_hooks();
 
 #ifdef HAVE_X11

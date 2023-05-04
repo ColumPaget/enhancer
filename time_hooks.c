@@ -1,4 +1,3 @@
-#define _DEFAULT_SOURCE
 #include "common.h"
 #include "config.h"
 #include <dlfcn.h>
@@ -82,8 +81,14 @@ time_t enhancer_gettime()
     return(tv.tv_sec);
 }
 
-//int gettimeofday(struct timeval *restrict tv, struct timezone *restrict tz)
+#ifndef GETTIMEOFDAY_NONE
+
+#ifdef GETTIMEOFDAY_TRAD
+int gettimeofday(struct timeval *restrict tv, struct timezone *restrict tz)
+#endif
+#ifdef GETTIMEOFDAY_RTZRVOID
 int gettimeofday(struct timeval *restrict tv, void *restrict tz)
+#endif
 {
     int Flags;
     char *TimeMod=NULL;
@@ -104,7 +109,7 @@ int gettimeofday(struct timeval *restrict tv, void *restrict tz)
     destroy(TimeMod);
     return(result);
 }
-
+#endif
 
 int settimeofday(const struct timeval *itv, const struct timezone *tz)
 {
@@ -153,6 +158,8 @@ void enhancer_time_hooks()
 {
     if (! enhancer_real_time) enhancer_real_time = dlsym(RTLD_NEXT, "time");
     if (! enhancer_real_setitimer) enhancer_real_setitimer = dlsym(RTLD_NEXT, "setitimer");
-    if (! enhancer_real_gettimeofday) enhancer_real_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
     if (! enhancer_real_settimeofday) enhancer_real_settimeofday = dlsym(RTLD_NEXT, "settimeofday");
+    #ifndef GETTIMEOFDAY_NONE
+    if (! enhancer_real_gettimeofday) enhancer_real_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
+    #endif
 }
