@@ -6,6 +6,10 @@ AC_PROG_MAKE_SET
 AC_HEADER_STDC
 AC_SYS_LARGEFILE
 
+AC_C_CONST
+AC_C_RESTRICT
+AC_C_VOLATILE
+AC_C_INLINE
 
 AC_ARG_ENABLE(x11, [  --enable-x11    use libx11 hooks], cf_x11=$enableval)
 AC_ARG_WITH(x-includes, [  --with-x-includes       path to X11 includes directory], X11INC="-I$withval" )

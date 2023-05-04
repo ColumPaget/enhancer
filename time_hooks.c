@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include "common.h"
 #include "config.h"
 #include <dlfcn.h>
@@ -6,7 +7,8 @@
 #include "hooks.h"
 
 time_t (*enhancer_real_time)(time_t *RetVal)=NULL;
-int (*enhancer_real_gettimeofday)(struct timeval *tv, struct timezone *tz)=NULL;
+//int (*enhancer_real_gettimeofday)(struct timeval *restrict tv, struct timezone *restrict tz)=NULL;
+int (*enhancer_real_gettimeofday)(struct timeval *restrict tv, void *restrict tz)=NULL;
 int (*enhancer_real_settimeofday)(const struct timeval *tv, const struct timezone *tz)=NULL;
 int (*enhancer_real_setitimer)(__itimer_which_t Type, const struct itimerval *new, struct itimerval *curr)=NULL;
 
@@ -80,7 +82,8 @@ time_t enhancer_gettime()
     return(tv.tv_sec);
 }
 
-int gettimeofday(struct timeval *tv, struct timezone *tz)
+//int gettimeofday(struct timeval *restrict tv, struct timezone *restrict tz)
+int gettimeofday(struct timeval *restrict tv, void *restrict tz)
 {
     int Flags;
     char *TimeMod=NULL;

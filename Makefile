@@ -1,7 +1,8 @@
 OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o hooks.o dl_hooks.o exec_hooks.o time_hooks.o file_hooks.o socket_hooks.o config.o net.o socks.o 
-FLAGS=-g -fPIC -g -O2
+FLAGS=-g -fPIC -g -O2 -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DHAVE_STDIO_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_STRINGS_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UNISTD_H=1 -DSTDC_HEADERS=1 -Drestrict=__restrict__ -DHAVE_LIBC=1 -DHAVE_UNSHARE=1
 CC=gcc
 VERSION=1.5
+
 
 all: enhancer.so
 
