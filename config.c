@@ -153,7 +153,7 @@ static void enhancer_set_config(TEnhancerConfig *Config, int ConfID, const char 
         Config->GlobalFlags |= GlobalFlag;
         Config->Flags |= Flag;
     }
-    else fprintf(stderr, "WARN: %s doesn't apply to function %s\n", EnhancerFuncNames[Config->Type]);
+    else fprintf(stderr, "WARN: %s doesn't apply to function %s\n", ConfName,  EnhancerFuncNames[Config->Type]);
 
 }
 

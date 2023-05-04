@@ -1,4 +1,4 @@
-AC_INIT(hooks.c)
+AC_INIT([enhancer],[1.6])
 
 AC_PROG_CC
 AC_LANG_C
@@ -89,6 +89,19 @@ then
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #define _DEFAULT_SOURCE
 #include <sys/time.h>
+	    int gettimeofday(struct timeval *restrict tv, void *tz)
+	    { 
+		return(0);
+	    }
+        ])],
+    [ac_cv_func_which_gettimeofday=rtz])
+fi
+
+if test "$ac_cv_func_which_gettimeofday" = ""
+then 
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#define _DEFAULT_SOURCE
+#include <sys/time.h>
 	    int gettimeofday(struct timeval *tv, void * restrict tz)
 	    { 
 		return(0);
@@ -130,6 +143,11 @@ case "$ac_cv_func_which_gettimeofday" in
 rtzrvoid)
 AC_MSG_RESULT([struct timeval *restrict tv, void *restrict tz])
 AC_DEFINE([GETTIMEOFDAY_RTZRVOID])
+break;;
+
+rtz)
+AC_MSG_RESULT([struct timeval *restrict tv, void *tz])
+AC_DEFINE([GETTIMEOFDAY_RTZ])
 break;;
 
 

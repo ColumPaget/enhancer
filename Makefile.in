@@ -2,7 +2,7 @@ OBJ=common.o vars.o iplist.o sockinfo.o actions.o exit.o file_shred.o hooks.o dl
 CFLAGS=-g -fPIC @CFLAGS@ 
 FLAGS=$(CFLAGS) @DEFS@
 CC=gcc
-VERSION=1.5
+VERSION=@PACKAGE_VERSION@
 
 
 all: enhancer.so

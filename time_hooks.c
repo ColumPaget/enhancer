@@ -6,7 +6,6 @@
 #include "hooks.h"
 
 time_t (*enhancer_real_time)(time_t *RetVal)=NULL;
-//int (*enhancer_real_gettimeofday)(struct timeval *restrict tv, struct timezone *restrict tz)=NULL;
 int (*enhancer_real_gettimeofday)(struct timeval *restrict tv, void *restrict tz)=NULL;
 int (*enhancer_real_settimeofday)(const struct timeval *tv, const struct timezone *tz)=NULL;
 int (*enhancer_real_setitimer)(__itimer_which_t Type, const struct itimerval *new, struct itimerval *curr)=NULL;
@@ -83,11 +82,14 @@ time_t enhancer_gettime()
 
 #ifndef GETTIMEOFDAY_NONE
 
-#ifdef GETTIMEOFDAY_TRAD
-int gettimeofday(struct timeval *restrict tv, struct timezone *restrict tz)
-#endif
 #ifdef GETTIMEOFDAY_RTZRVOID
 int gettimeofday(struct timeval *restrict tv, void *restrict tz)
+#elif defined GETTIMEOFDAY_TZVOID
+int gettimeofday(struct timeval *tv, void *tz)
+#elif defined GETTIMEOFDAY_VOIDVOID
+int gettimeofday(void *tv, void *tz)
+#else
+int gettimeofday(struct timeval *restrict tv, struct timezone *restrict tz)
 #endif
 {
     int Flags;
