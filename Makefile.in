@@ -60,7 +60,7 @@ socks.o: socks.c socks.h common.h
 
 
 clean:
-	rm -f *.o
+	rm -f *.o enhancer.so config.log
 
 install:
 	cp enhancer.so /usr/local/lib
