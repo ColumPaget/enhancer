@@ -210,6 +210,7 @@ int listen(int socket, int qlen)
 
     if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("listen");
 
+    destroy(Redirect);
     return(result);
 }
 

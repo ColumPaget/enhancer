@@ -57,10 +57,15 @@ onexit xtermtitle idle
 Enhancer looks for its config in the following places:
 
 1. path specified by `ENHANCER_CONFIG_FILE` environment variable.
-2. `~/.enhancer/<progname>.conf`
-3. `~/.enhancer.conf`
-4. `/etc/enhancer.d/<progname>.conf`
-5. `/etc/enhancer.conf`
+2. path specified by `ENHANCER_CONFIG_DIR` environment variable, $(ENHANCER_CONFIG_DIR)/<progname>.conf
+3. path specified by `ENHANCER_CONFIG_DIR` environment variable, $(ENHANCER_CONFIG_DIR)/<progname>
+4. `~/.config/enhancer/<progname>.conf`
+5. `~/.config/enhancer/<progname>`
+6. `~/.enhancer/<progname>.conf`
+7. `~/.enhancer/<progname>`
+8. `~/.enhancer.conf`
+9. `/etc/enhancer.d/<progname>.conf`
+10. `/etc/enhancer.conf`
 
 in the case of the paths containing `progname` the name of the currently running program is subsitututed in before the config file is looked for.
 
@@ -104,11 +109,11 @@ Enhancer only hooks a few useful libc functions. These are:
 main       the 'main' function that's the entry point to the program. This is program start-up.
 onexit     triggers on program exit
 arg        not a function, triggers on every argument to the program
-open       'open group' which included open, open64, openat, fopen
+open       'open group' which includes open, open64, openat, fopen
 close
 uname
-unlink
-rename
+unlink     'unlink group' which includes unlink, unlintat
+rename     'rename group' which includes rename, renameat and renameat2
 time       applies to both time and gettime of day
 settime
 setuid
@@ -134,6 +139,8 @@ fdatasync
 dlopen
 dlclose
 ```
+
+
 
 X11 Hooked Functions
 ====================
@@ -191,7 +198,7 @@ collect         collect child processes (i.e. calls 'waitpid(-1)')
 deny-symlinks   for file functions: do not operate on symlinks
 setvar          set a variable. Takes an argument of the form 'name=value'
 setenv          set environment variable. Takes an argument of the form 'name=value'
-setbasename     set a variable with the basename of the first argument to this function
+setbasename     set a variable with the basename of the value part of a 'name=value' argument. So 'setbasename file=/home/user1/myfile.txt' would set a variable called 'file' to 'myfile.txt'
 log             log to default logfile. Takes string argument.
 syslog          log to syslog. Takes string argument.
 syslogcrit      log a critical event to syslog. Takes string argument.
@@ -288,9 +295,17 @@ socks:<user>@<host>:<port>      redirect to a socks4 or socks4a server (adequate
 socks:<host>:<port>             redirect to a socks4 or socks4a server (adequate for use with ssh -D proxying)
 tcp:<host>:<port>               redirect to a tcp host
 unix:<path>                     redirect to a unix socket
+```
  
+
+It's also possible to use it in the 'rename' function call, e.g.:
+
+
+```
+rename setbasename 'fname=%1' redirect /home/user1/archive/$(fname)
 ```
 
+would intercept rename functoin calls, and move their files to '/home/user1/archive/', preserving the filename as it was in the first (or 'from') argument of the rename call.
 
 
 IPMAPPING

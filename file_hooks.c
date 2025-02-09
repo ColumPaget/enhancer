@@ -18,6 +18,9 @@ int (*enhancer_real_write)(int fd, const void *Buffer, size_t len)=NULL;
 int (*enhancer_real_close)(int fd)=NULL;
 int (*enhancer_real_unlink)(const char *path)=NULL;
 int (*enhancer_real_unlinkat)(int dirfd, const char *path, int flags)=NULL;
+int (*enhancer_real_rename)(const char *from, const char *to)=NULL;
+int (*enhancer_real_renameat)(int fromfd, const char *from, int tofd, const char *to)=NULL;
+int (*enhancer_real_renameat2)(int fromfd, const char *from, int tofd, const char *to, int flags)=NULL;
 int (*enhancer_real_fsync)(int fd)=NULL;
 int (*enhancer_real_fdatasync)(int fd)=NULL;
 
@@ -371,7 +374,7 @@ return(result);
 
 int unlink(const char *path)
 {
-    int Flags;
+    int Flags, result;
 
     if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
 
@@ -380,13 +383,16 @@ int unlink(const char *path)
     if (Flags & FLAG_PRETEND) return(0);
     if (Flags & FLAG_SHRED) ShredFileAt(AT_FDCWD, path);
 
-    return(enhancer_real_unlink(path));
+    result=enhancer_real_unlink(path);
+    if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("unlink");
+
+    return(result);
 }
 
 
 int unlinkat(int dirfd, const char *path, int flags)
 {
-    int Flags;
+    int Flags, result;
 
     if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
 
@@ -394,7 +400,101 @@ int unlinkat(int dirfd, const char *path, int flags)
     if (Flags & FLAG_DENY) return(-1);
     if (Flags & FLAG_PRETEND) return(0);
     if (Flags & FLAG_SHRED) ShredFileAt(dirfd, path);
-    return(enhancer_real_unlinkat(dirfd, path, flags));
+
+    result=enhancer_real_unlinkat(dirfd, path, flags);
+    if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("unlinkat");
+
+    return(result);
+}
+
+
+int rename(const char *from, const char *to)
+{
+    int Flags, result;
+    char *redirect=NULL;
+
+    if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
+
+    Flags=enhancer_checkconfig_with_redirect(FUNC_RENAME, "rename", from, to, 0, 0, &redirect);
+fprintf(stderr, "RENAME: %d %s\n", Flags, redirect);
+
+    if (Flags & FLAG_DENY)
+    {
+        destroy(redirect);
+        return(-1);
+    }
+
+    if (Flags & FLAG_PRETEND)
+    {
+        destroy(redirect);
+        return(0);
+    }
+
+		if (strvalid(redirect)) result=enhancer_real_rename(from, redirect);
+    else result=enhancer_real_rename(from, to);
+
+    if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("rename");
+
+    destroy(redirect);
+    return(result);
+}
+
+
+int renameat(int fromdirfd, const char *from, int todirfd, const char *to)
+{
+    int Flags, result;
+    char *redirect=NULL;
+
+    if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
+
+    Flags=enhancer_checkconfig_with_redirect(FUNC_RENAME, "rename", from, to, 0, 0, &redirect);
+    if (Flags & FLAG_DENY)
+    {
+        destroy(redirect);
+        return(-1);
+    }
+
+    if (Flags & FLAG_PRETEND)
+    {
+        destroy(redirect);
+        return(0);
+    }
+
+
+    result=enhancer_real_renameat(fromdirfd, from, todirfd, to);
+    if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("renameat");
+
+    destroy(redirect);
+    return(result);
+}
+
+
+int renameat2(int fromdirfd, const char *from, int todirfd, const char *to, int flags)
+{
+    int Flags, result;
+    char *redirect=NULL;
+
+    if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
+
+    Flags=enhancer_checkconfig_with_redirect(FUNC_RENAME, "rename", from, to, 0, 0, &redirect);
+
+    if (Flags & FLAG_DENY)
+    {
+        destroy(redirect);
+        return(-1);
+    }
+
+    if (Flags & FLAG_PRETEND)
+    {
+        destroy(redirect);
+        return(0);
+    }
+
+    result=enhancer_real_renameat2(fromdirfd, from, todirfd, to, flags);
+    if ((result !=0) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("renameat2");
+
+    destroy(redirect);
+    return(result);
 }
 
 
@@ -444,6 +544,9 @@ void enhancer_file_hooks()
     if (! enhancer_real_close) enhancer_real_close = dlsym(RTLD_NEXT, "close");
     if (! enhancer_real_unlink) enhancer_real_unlink = dlsym(RTLD_NEXT, "unlink");
     if (! enhancer_real_unlinkat) enhancer_real_unlinkat = dlsym(RTLD_NEXT, "unlinkat");
+    if (! enhancer_real_rename) enhancer_real_rename = dlsym(RTLD_NEXT, "rename");
+    if (! enhancer_real_renameat) enhancer_real_renameat = dlsym(RTLD_NEXT, "renameat");
+    if (! enhancer_real_renameat2) enhancer_real_renameat2 = dlsym(RTLD_NEXT, "renameat2");
     if (! enhancer_real_fsync) enhancer_real_fsync = dlsym(RTLD_NEXT, "fsync");
     if (! enhancer_real_fdatasync) enhancer_real_fsync = dlsym(RTLD_NEXT, "fdatasync");
 }

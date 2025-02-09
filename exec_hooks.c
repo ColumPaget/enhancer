@@ -43,29 +43,36 @@ static int enhancer_sanitise_exec(int Flags, const char *command, char **Sanitis
 }
 
 
-static char **enhancer_exec_varg_pack(const char *first_arg, va_list args)
+//pack a list of varadic args into an array
+int enhancer_exec_varg_pack(char ***packed, const char *first_arg, va_list args)
 {
     const char *arg;
-    char **packed=NULL;
     int i=1;
 
-    packed=realloc(packed, sizeof(char *) * (i+1));
-    packed[i]=strdup(first_arg);
+
+			//first arg is a special case, as it's not considered part
+			//of the varadic list, as it's the last 'normal' arg that
+			//must be supplied to mark the start of the varadic list
+			//thus we must add it outside of the loop
+     (*packed)=realloc((*packed), sizeof(char *) * (i+10));
+     (*packed)[i]=strdup(first_arg);
+     i++;
 
     arg=va_arg(args, const char *);
     while (arg != NULL)
     {
-        packed=realloc(packed, sizeof(char *) * (i+1));
-        packed[i]=strdup(arg);
+        (*packed)=realloc((*packed), sizeof(char *) * (i+10));
+        (*packed)[i]=strdup(arg);
         i++;
         arg=va_arg(args, const char *);
     }
-    packed[i]=NULL;
+    (*packed)[i]=NULL;
 
-    return(packed);
+    return(i);
 }
 
 
+//destro a null-terminated array
 static void enhancer_exec_pack_destroy(char **pack)
 {
     int i;
@@ -136,7 +143,9 @@ int execve(const char *command, char *const args[], char *const env[])
 
     result=enhancer_real_execve(command, p_args, env);
 
+		//we can only get here fi the execve failed
     if ((result < 1 ) && (Flags & FLAG_FAILDIE)) enhancer_fail_die("execve");
+    enhancer_exec_pack_destroy(sani_args);
 
     return(result);
 }
@@ -144,17 +153,22 @@ int execve(const char *command, char *const args[], char *const env[])
 
 
 
-int execl(const char *path, const char *arg, ...)
+int execl(const char *path, const char *first_arg, ...)
 {
     va_list args;
     char **packed;
     int result;
 
-    va_start(args, arg);
-    packed=enhancer_exec_varg_pack(arg, args);
+		packed=calloc(10, sizeof(char **));
+		packed[0]=strdup(path);
+    va_start(args, first_arg);
+    enhancer_exec_varg_pack(&packed, first_arg, args);
     va_end(args);
 
+		//args will get sanitized in here
     result=execve(path, packed, environ);
+			
+		//we can only get here if the execve failed
     enhancer_exec_pack_destroy(packed);
 
     return(result);

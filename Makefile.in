@@ -37,7 +37,7 @@ config.o: config.c config.h common.h
 hooks.o: hooks.c hooks.h common.h
 	$(CC) $(FLAGS) -c hooks.c
 
-#use CFLAGS no FLAGS for file_hooks, due to OFFSET_BITS_64 causing issues
+#use CFLAGS not FLAGS for file_hooks, due to OFFSET_BITS_64 causing issues
 file_hooks.o: file_hooks.c file_hooks.h common.h
 	$(CC) $(CFLAGS) -c file_hooks.c
 
@@ -68,7 +68,7 @@ socks.o: socks.c socks.h common.h
 
 
 clean:
-	rm -f *.o enhancer.so config.log
+	rm -f *.o enhancer.so config.log *.orig
 
 install:
 	cp enhancer.so /usr/local/lib

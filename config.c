@@ -20,7 +20,7 @@ typedef enum {MATCH_ALL, MATCH_PATH, MATCH_BASENAME, MATCH_FAMILY, MATCH_PROTO, 
 #define OP_LT  3
 
 
-char *EnhancerFuncNames[]= {"all","main", "onexit", "arg", "open", "close", "read", "write", "uname", "dlopen", "dlclose", "socket", "connect", "bind", "listen", "accept", "gethostip", "sprintf", "fork", "exec", "system", "sysexec", "unlink", "setuid", "setgid", "chown", "chmod", "chdir", "chroot", "time","settime","mprotect", "fsync", "fdatasync", "select", "XMapWindow","XRaiseWindow", "XLowerWindow", "XSendEvent", "XNextEvent", "XLoadFont", "XChangeProperty", NULL};
+char *EnhancerFuncNames[]= {"all","main", "onexit", "arg", "open", "close", "read", "write", "uname", "dlopen", "dlclose", "socket", "connect", "bind", "listen", "accept", "gethostip", "sprintf", "fork", "exec", "system", "sysexec", "unlink", "rename", "setuid", "setgid", "chown", "chmod", "chdir", "chroot", "time","settime","mprotect", "fsync", "fdatasync", "select", "XMapWindow","XRaiseWindow", "XLowerWindow", "XSendEvent", "XNextEvent", "XLoadFont", "XChangeProperty", NULL};
 
 
 char *EnhancerTokNames[]= {"deny","allow","die","abort","pretend","setvar","setbasename","log","syslog","syslogcrit","echo", "debug", "send", "exec", "die-on-fail", "collect", "sleep", "usleep", "deny-links","deny-symlinks","redirect","fallback","chrooted","if-chrooted","path","basename","peer","port","user","group","family","fd", "arg", "keepalive", "localnet", "reuseport", "tcp-qack", "tcp-nodelay", "ttl", "freebind", "cmod", "lock", "fdcache","create", "shred", "searchpath", "xstayabove", "xstaybelow", "xiconized", "xunmanaged", "xfullscreen", "xtransparent", "xnormal","pidfile","lockfile", "xtermtitle","backup", "nosync", "fsync", "fdatasync", "writejail", "unshare", "setenv", "getip", "cd", "chroot", "copyclone", "linkclone", "ipmap", "nodescend", "fadv_seq", "fadv_rand", "fadv_nocache", "qlen", "sanitise", "die-on-taint", "deny-on-taint", "mlockall", "mlockcurr", "allow-xsendevent", NULL};
@@ -201,37 +201,6 @@ static void enhancer_add_match(TEnhancerConfig *Config, int Type, int Op, int Ma
 }
 
 
-/*
-
-	case ACT_LOG:
-	case ACT_SYSLOG:
-	case ACT_SYSLOG_CRIT:
-	case ACT_SEND:
-	case ACT_ECHO:
-	case ACT_DEBUG:
-	case ACT_SLEEP:
-	case ACT_USLEEP:
-	case ACT_PIDFILE:
-	case ACT_SETVAR:
-	case ACT_SETENV:
-	case ACT_SETBASENAME:
-	case ACT_EXEC:
-	case ACT_XTERM_TITLE:
-	case ACT_UNSHARE:
-	case ACT_GETHOSTIP:
-	case ACT_CHDIR:
-	case ACT_CHROOT:
-	case ACT_COPY_CLONE:
-	case ACT_LINK_CLONE:
-	case ACT_REDIRECT:
-	case ACT_FALLBACK:
-	case ACT_SEARCHPATH:
-	case ACT_CMOD:
-	case ACT_TTL:
-	case ACT_WRITEJAIL:
-	case ACT_IPMAP:
-	break;
- */
 
 static int enhancer_action_matches_func(int func, int action)
 {
@@ -647,6 +616,7 @@ int enhancer_checkconfig_default(int FuncID, const char *FuncName, const char *S
 
     if (Conf)
     {
+        //do any actions that can be done immediately
         enhancer_actions(Conf, FuncName, Str1, Str2, NULL);
         Flags=Conf->Flags;
         enhancer_config_destroy(Conf);
@@ -690,6 +660,7 @@ TEnhancerConfig *enhancer_checkconfig_open_function(int FuncID, const char *Func
         else if (Int1 & O_RDWR) p_open_flags="read/write";
         else p_open_flags="read";
 
+        //do any actions that can be done immediately
         enhancer_actions(Conf, FuncName, Path, p_open_flags, Redirect);
 
     }
@@ -708,6 +679,7 @@ int enhancer_checkconfig_with_redirect(int FuncID, const char *FuncName, const c
     if (Conf)
     {
         Flags=Conf->Flags;
+        //do any actions that can be done immediately
         enhancer_actions(Conf, FuncName, Str1, Str2, Redirect);
         enhancer_config_destroy(Conf);
     }
@@ -1134,13 +1106,13 @@ static const char *enhancer_parse_config_item(const char *ConfigStr, TEnhancerCo
             enhancer_add_action(Conf, ACT_IPMAP, Name, 0, NULL);
             break;
 
-	case TOK_MLOCKALL:
+        case TOK_MLOCKALL:
             enhancer_add_action(Conf, ACT_MLOCKALL, Name, 0, NULL);
-	    break;
+            break;
 
-	case TOK_MLOCKCURR:
+        case TOK_MLOCKCURR:
             enhancer_add_action(Conf, ACT_MLOCKCURR, Name, 0, NULL);
-	    break;
+            break;
 
 
         case TOK_NO_DESCEND:
@@ -1228,18 +1200,33 @@ static void enhancer_read_prog_config(const char *Config)
 
 
 
-static char *enhancer_read_config(char *RetStr, const char *Dir, const char *FileName)
+static char *enhancer_read_config(char *RetStr, const char *Root, const char *SubDir, const char *FileName, const char *Extension)
 {
     char *Tempstr=NULL;
 
-    Tempstr=enhancer_strcpy(Tempstr, Dir);
+		//there must always be a valid Root Directory, but subdirectory and extension (and even filename if full path is given to file) can be blank
+		if (strvalid(Root))
+		{
+    Tempstr=enhancer_strcpy(Tempstr, Root);
+    Tempstr=enhancer_strncat(Tempstr, SubDir, 0);
+
+		if (strvalid(FileName))
+		{
     Tempstr=enhancer_strncat(Tempstr, FileName, 0);
+    Tempstr=enhancer_strncat(Tempstr, Extension, 0);
+		}
+
     RetStr=enhancer_read_file(RetStr, Tempstr);
+		}
 
     destroy(Tempstr);
 
     return(RetStr);
 }
+
+
+
+
 
 
 static int enhancer_load_prog_config(const char *ProgName)
@@ -1248,55 +1235,16 @@ static int enhancer_load_prog_config(const char *ProgName)
     const char *ptr;
     int Found=0;
 
-//first have config files been specified in environment variables?
-    Tempstr=enhancer_strcpy(Tempstr, getenv("ENHANCER_CONFIG_DIR"));
-    if (strvalid(Tempstr))
-    {
-        SetupData=enhancer_read_config(SetupData, Tempstr, ProgName);
-        if (! strvalid(SetupData))
-        {
-            syslog(LOG_WARNING, "ERROR: cant load config from %s/%s", Tempstr, ProgName);
-            //as we had an explicitly set config file, quit
-            //exit(1);
-        }
-    }
+   	if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("ENHANCER_CONFIG_FILE"), "", "", "");
+   	if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("ENHANCER_CONFIG_DIR"), "", ProgName, ".conf");
+   	if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("ENHANCER_CONFIG_DIR"), "", ProgName, "");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("HOME"), "/.enhancer/", ProgName, ".conf");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("HOME"), "/.enhancer/", ProgName, "");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("HOME"), "/.config/enhancer/", ProgName, ".conf");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, getenv("HOME"), "/.config/enhancer/", ProgName, "");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, "/etc", "/enhancer.d/", ProgName, ".conf");
+    if (! strvalid(SetupData)) SetupData=enhancer_read_config(SetupData, "/etc", "/enhancer.d/", ProgName, "");
 
-
-    if (! strvalid(SetupData))
-    {
-        Tempstr=enhancer_strcpy(Tempstr, getenv("ENHANCER_CONFIG_FILE"));
-        if (strvalid(Tempstr))
-        {
-            SetupData=enhancer_read_config(SetupData, Tempstr, "");
-            if (! strvalid(SetupData))
-            {
-                syslog(LOG_WARNING, "ERROR: cant load config from %s", Tempstr);
-                //as we had an explicitly set config file, quit
-                //exit(1);
-            }
-        }
-    }
-
-    if (! strvalid(SetupData))
-    {
-        Tempstr=enhancer_strcpy(Tempstr, getenv("HOME"));
-        Tempstr=enhancer_strncat(Tempstr, "/.enhancer/",0);
-        SetupData=enhancer_read_config(SetupData, Tempstr, ProgName);
-        if (! strvalid(SetupData))
-        {
-            Tempstr=enhancer_strcpy(Tempstr, getenv("HOME"));
-            SetupData=enhancer_read_config(SetupData, Tempstr, "/.enhancer.conf");
-        }
-    }
-
-    if (! strvalid(SetupData))
-    {
-        SetupData=enhancer_read_config(SetupData, "/etc/enhancer.d/", ProgName);
-        if (! strvalid(SetupData))
-        {
-            SetupData=enhancer_read_config(SetupData, "/etc/", "enhancer.conf");
-        }
-    }
 
     ptr=SetupData;
     while (ptr)

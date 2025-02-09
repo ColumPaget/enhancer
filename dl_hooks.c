@@ -10,8 +10,8 @@ int (*enhancer_real_dlclose)(void *handle)=NULL;
 
 void *enhancer_dlopen(const char *filename, int flag)
 {
-if (! enhancer_real_dlopen) return(NULL);
-return(enhancer_real_dlopen(filename, flag));
+    if (! enhancer_real_dlopen) return(NULL);
+    return(enhancer_real_dlopen(filename, flag));
 }
 
 void *dlopen(const char *path, int flags)

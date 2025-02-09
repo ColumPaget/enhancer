@@ -306,29 +306,29 @@ Display *XOpenDisplay(const char *DispID)
 
 int XNextEvent(Display *display, XEvent *ev)
 {
-int result;
-int Flags=0;
+    int result;
+    int Flags=0;
 
 
-result=enhancer_real_XNextEvent(display, ev);
+    result=enhancer_real_XNextEvent(display, ev);
 
-Flags=enhancer_checkconfig_default(FUNC_XNextEvent, "XNextEvent", "", "", 0, 0);
-switch (ev->type)
-{
-case KeyPress:
-case KeyRelease:
-if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xkey.send_event=False;
-break;
+    Flags=enhancer_checkconfig_default(FUNC_XNextEvent, "XNextEvent", "", "", 0, 0);
+    switch (ev->type)
+    {
+    case KeyPress:
+    case KeyRelease:
+        if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xkey.send_event=False;
+        break;
 
-case ButtonPress:
-case ButtonRelease:
-if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xbutton.send_event=False;
-break;
+    case ButtonPress:
+    case ButtonRelease:
+        if (Flags & FLAG_ALLOW_XSENDEVENT) ev->xbutton.send_event=False;
+        break;
 
-}
+    }
 
 //X11Update();
-return(result);
+    return(result);
 }
 
 /*

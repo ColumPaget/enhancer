@@ -62,13 +62,18 @@ time_t time(time_t *RetVal)
     if (! enhancer_real_time) enhancer_get_real_functions();
 
     Flags=enhancer_checkconfig_with_redirect(FUNC_TIME, "time", "", "", 0, 0, &TimeMod);
-    if (Flags & FLAG_DENY) return(-1);
+    if (Flags & FLAG_DENY)
+    {
+        destroy(TimeMod);
+        return(-1);
+    }
 
     tval=enhancer_real_time(NULL);
     tval=ChangeTime(tval, TimeMod);
 
     if (RetVal) *RetVal=tval;
 
+    destroy(TimeMod);
     return(tval);
 }
 
@@ -161,7 +166,7 @@ void enhancer_time_hooks()
     if (! enhancer_real_time) enhancer_real_time = dlsym(RTLD_NEXT, "time");
     if (! enhancer_real_setitimer) enhancer_real_setitimer = dlsym(RTLD_NEXT, "setitimer");
     if (! enhancer_real_settimeofday) enhancer_real_settimeofday = dlsym(RTLD_NEXT, "settimeofday");
-    #ifndef GETTIMEOFDAY_NONE
+#ifndef GETTIMEOFDAY_NONE
     if (! enhancer_real_gettimeofday) enhancer_real_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
-    #endif
+#endif
 }

@@ -384,14 +384,13 @@ int enhancer_actions(TEnhancerConfig *Conf, const char *FuncName, const char *St
             enhancer_action_clone(Act->Type, Act->StrArg);
             break;
 
-	case ACT_MLOCKALL:
-		mlockall(MCL_FUTURE);
-	     break;
+        case ACT_MLOCKALL:
+            mlockall(MCL_FUTURE);
+            break;
 
-	case ACT_MLOCKCURR:
-		mlockall(MCL_CURRENT);
-	     break;
-
+        case ACT_MLOCKCURR:
+            mlockall(MCL_CURRENT);
+            break;
 
         case ACT_NO_DESCEND:
             enhancer_flags |= ENHANCER_STATE_NO_DESCEND;
@@ -402,7 +401,11 @@ int enhancer_actions(TEnhancerConfig *Conf, const char *FuncName, const char *St
 
 
     if (Conf->GlobalFlags & FLAG_COLLECT) waitpid(-1, NULL, WNOHANG);
+
+		//ACT_ABORT is handled here
     if (Conf->GlobalFlags & FLAG_ABORT) abort();
+
+		//ACT_DIE is handled here
     if (Conf->GlobalFlags & FLAG_DIE) exit(1);
 
 

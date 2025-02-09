@@ -1,0 +1,45 @@
+v1.7 (2025-02-09)
+-----------------
+  * added hooks for 'rename', 'renameat' and 'renameat2' functions
+  * fix issues with parsing arguments to exec function calls  
+  * restructure config file search, add ~/.config/enhancer/ to searched directories
+  * added CHANGELOG
+
+
+v1.6 (2023-05-04)
+-----------------
+  * "make clean" cleans a bit more (removing .orig and other cruft)
+  * fix gettimeofday compile
+  * Merge pull request #1 from ColumPaget/add-license-1
+  * Create LICENSE
+
+v1.5 (2023-01-19)
+-----------------
+  * XNextEvent/allow-xsendevent added
+  * added mlockall action
+  *¬ix compile errors with some versions of gcc
+
+v1.4 (2020-12-04)
+-----------------
+  * bugfix: don't require logfile open for ACT_SYSLOG and ACT_DEBUG. 
+  * butfix: Handle situations where dlopen is called, but hasn't been loaded
+  * added backslash quoting and nodescend action
+
+v1.3 (2020-11-06)
+-----------------
+  * a¬dd dhook.c to hook dlopen and dlclose
+  * added 'pretend' action 
+
+v1.1 (2020-10-19)
+-----------------
+  * move version definition to configure.ac
+  *¬ix config-file path
+  * ogg123 now works with enhancer. 
+  * Fix compiling x11 function
+
+v1.1 (2020-10-16)
+-----------------
+  * reuse ipmappings where possible. 
+  * Documentation improvements
+
+

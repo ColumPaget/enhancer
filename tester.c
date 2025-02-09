@@ -31,7 +31,9 @@ main()
     }
     */
 
-//system("noexist ; /bin/echo hello");
-    execl("/bin/diff", "--help", NULL);
-    execl("/bin/echo", "hello", "|", "md5sum", NULL);
+rename("/home/colum/Downloads/test.file", "/home/colum/Downloads/test.done");
+
+    system("noexist ; /bin/echo hello");
+   // execl("/bin/diff", "--help", NULL);
+   // execl("/bin/echo", "hello", "|", "md5sum", NULL);
 }
