@@ -407,7 +407,7 @@ static const char *enhancer_config_tok(const char *Config, char **Tok)
 
     if (! Config) return(NULL);
     ptr=Config;
-    while (*ptr==' ') ptr++;
+    while (*ptr==' ' || *ptr=='\t') ptr++;
     ptr=enhancer_istrtok(ptr, dividers, Tok);
 
     return(ptr);
