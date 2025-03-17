@@ -1,4 +1,4 @@
-AC_INIT([enhancer],[1.7])
+AC_INIT([enhancer],[1.8])
 
 AC_PROG_CC
 AC_LANG_C

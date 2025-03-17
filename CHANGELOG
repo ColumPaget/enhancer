@@ -1,3 +1,7 @@
+v1.8 (2025-03-17)
+-----------------
+  * fixes from agreppin@github.com - remove debugging, allow use of tab in config file
+
 v1.7 (2025-02-09)
 -----------------
   * added hooks for 'rename', 'renameat' and 'renameat2' functions
