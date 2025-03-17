@@ -416,7 +416,7 @@ int rename(const char *from, const char *to)
     if (! (enhancer_flags & ENHANCER_STATE_INITDONE)) enhancer_init();
 
     Flags=enhancer_checkconfig_with_redirect(FUNC_RENAME, "rename", from, to, 0, 0, &redirect);
-fprintf(stderr, "RENAME: %d %s\n", Flags, redirect);
+//fprintf(stderr, "RENAME: %d %s\n", Flags, redirect);
 
     if (Flags & FLAG_DENY)
     {
@@ -469,7 +469,7 @@ int renameat(int fromdirfd, const char *from, int todirfd, const char *to)
 }
 
 
-int renameat2(int fromdirfd, const char *from, int todirfd, const char *to, int flags)
+int renameat2(int fromdirfd, const char *from, int todirfd, const char *to, unsigned int flags)
 {
     int Flags, result;
     char *redirect=NULL;
